@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { productosApi } from "../../../../lib/api";
+import { productosApi } from "@/lib/api";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/context/ToastContext";
+import ImageUploader from "@/components/ui/ImageUploader";
 
 export default function NuevoProductoPage() {
     const [form, setForm] = useState({
@@ -21,6 +23,7 @@ export default function NuevoProductoPage() {
     });
     const [guardando, setGuardando] = useState(false);
     const router = useRouter();
+    const { showToast } = useToast();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -38,8 +41,9 @@ export default function NuevoProductoPage() {
                 almacenamiento: Number(form.almacenamiento),
             });
             router.push("/dashboard");
+            showToast("Producto creado correctamente", "success");
         } catch {
-            alert("Error al crear el producto");
+            showToast("Error al crear el producto", "error");
         } finally {
             setGuardando(false);
         }
@@ -115,6 +119,11 @@ export default function NuevoProductoPage() {
                                     className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                         </div>
+
+                        <ImageUploader
+                            imagenes={form.imagenes}
+                            onChange={(imgs) => setForm({ ...form, imagenes: imgs })}
+                        />
 
                         <div className="flex gap-3 mt-2">
                             <Link href="/dashboard"

@@ -1,5 +1,6 @@
 package com.tiendacelulares.backend.service;
 
+import com.tiendacelulares.backend.dto.CrearProductoRequest;
 import com.tiendacelulares.backend.model.Producto;
 import com.tiendacelulares.backend.repository.ProductoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -22,23 +23,35 @@ public class ProductoService {
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + id));
     }
 
-    public Producto crear(Producto producto) {
-        producto.setActivo(true);  // agregá esta línea
+    public Producto crear(CrearProductoRequest request) {
+        Producto producto = Producto.builder()
+                .nombre(request.getNombre())
+                .marca(request.getMarca())
+                .modelo(request.getModelo())
+                .descripcion(request.getDescripcion())
+                .precio(request.getPrecio())
+                .stock(request.getStock())
+                .almacenamiento(request.getAlmacenamiento())
+                .ram(request.getRam())
+                .color(request.getColor())
+                .imagenes(request.getImagenes())
+                .activo(true)
+                .build();
         return productoRepository.save(producto);
     }
 
-    public Producto actualizar(Long id, Producto productoActualizado) {
+    public Producto actualizar(Long id, CrearProductoRequest request) {
         Producto existente = obtenerPorId(id);
-        existente.setNombre(productoActualizado.getNombre());
-        existente.setMarca(productoActualizado.getMarca());
-        existente.setModelo(productoActualizado.getModelo());
-        existente.setDescripcion(productoActualizado.getDescripcion());
-        existente.setPrecio(productoActualizado.getPrecio());
-        existente.setStock(productoActualizado.getStock());
-        existente.setAlmacenamiento(productoActualizado.getAlmacenamiento());
-        existente.setRam(productoActualizado.getRam());
-        existente.setColor(productoActualizado.getColor());
-        existente.setImagenes(productoActualizado.getImagenes());
+        existente.setNombre(request.getNombre());
+        existente.setMarca(request.getMarca());
+        existente.setModelo(request.getModelo());
+        existente.setDescripcion(request.getDescripcion());
+        existente.setPrecio(request.getPrecio());
+        existente.setStock(request.getStock());
+        existente.setAlmacenamiento(request.getAlmacenamiento());
+        existente.setRam(request.getRam());
+        existente.setColor(request.getColor());
+        existente.setImagenes(request.getImagenes());
         return productoRepository.save(existente);
     }
 

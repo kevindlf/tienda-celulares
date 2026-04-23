@@ -1,8 +1,8 @@
 package com.tiendacelulares.backend.controller;
 
+import com.tiendacelulares.backend.dto.CrearProductoRequest;
 import com.tiendacelulares.backend.dto.MapperDTO;
 import com.tiendacelulares.backend.dto.ProductoDTO;
-import com.tiendacelulares.backend.model.Producto;
 import com.tiendacelulares.backend.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/productos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductoController {
 
     private final ProductoService productoService;
@@ -33,15 +32,15 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO> crear(@Valid @RequestBody Producto producto) {
+    public ResponseEntity<ProductoDTO> crear(@Valid @RequestBody CrearProductoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(mapper.toProductoDTO(productoService.crear(producto)));
+                .body(mapper.toProductoDTO(productoService.crear(request)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id,
-                                                  @Valid @RequestBody Producto producto) {
-        return ResponseEntity.ok(mapper.toProductoDTO(productoService.actualizar(id, producto)));
+                                                  @Valid @RequestBody CrearProductoRequest request) {
+        return ResponseEntity.ok(mapper.toProductoDTO(productoService.actualizar(id, request)));
     }
 
     @DeleteMapping("/{id}")

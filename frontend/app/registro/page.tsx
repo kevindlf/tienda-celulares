@@ -28,6 +28,11 @@ export default function RegistroPage() {
             return;
         }
 
+        if (form.password.length < 6) {
+            setError("La contraseña debe tener al menos 6 caracteres");
+            return;
+        }
+
         setCargando(true);
         try {
             await authApi.registro({
@@ -73,8 +78,7 @@ export default function RegistroPage() {
                                 onChange={handleChange}
                                 placeholder="Juan Pérez"
                                 required
-                               // En cada input agregá text-gray-900
-className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
@@ -87,8 +91,7 @@ className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 foc
                                 onChange={handleChange}
                                 placeholder="tu@email.com"
                                 required
-                               // En cada input agregá text-gray-900
-className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
@@ -101,8 +104,7 @@ className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 foc
                                 onChange={handleChange}
                                 placeholder="Mínimo 6 caracteres"
                                 required
-                               // En cada input agregá text-gray-900
-className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
@@ -115,16 +117,14 @@ className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 foc
                                 onChange={handleChange}
                                 placeholder="Repetí la contraseña"
                                 required
-                                // En cada input agregá text-gray-900
-className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
                         <button
                             type="submit"
                             disabled={cargando}
-                            // En cada input agregá text-gray-900
-className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {cargando ? "Registrando..." : "Crear cuenta"}
                         </button>

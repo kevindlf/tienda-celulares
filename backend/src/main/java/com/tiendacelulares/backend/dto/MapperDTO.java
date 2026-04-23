@@ -52,7 +52,7 @@ public class MapperDTO {
     public OrdenDTO toOrdenDTO(Orden orden) {
         return OrdenDTO.builder()
                 .id(orden.getId())
-                .usuario(toUsuarioDTO(orden.getUsuario()))
+                .usuario(orden.getUsuario() != null ? toUsuarioDTO(orden.getUsuario()) : null)
                 .items(orden.getItems().stream()
                         .map(this::toOrdenItemDTO)
                         .collect(Collectors.toList()))

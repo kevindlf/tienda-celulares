@@ -1,6 +1,6 @@
 package com.tiendacelulares.backend.service;
 
-import com.tiendacelulares.backend.dto.CrearOrdenRequest;
+import com.tiendacelulares.backend.controller.VentaFisicaController.VentaFisicaRequest;
 import com.tiendacelulares.backend.model.*;
 import com.tiendacelulares.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,40 +14,34 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrdenService {
+public class VentaFisicaService {
 
     private final OrdenRepository ordenRepository;
-    private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
 
     @Transactional
-    public Orden crearOrden(String emailUsuario, CrearOrdenRequest request) {
+    public Orden registrarVenta(VentaFisicaRequest request) {
 
-        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-
-        // Primero creamos la orden SIN items
+        // Crear orden como venta física — estado ENTREGADO directamente
         Orden orden = Orden.builder()
-                .usuario(usuario)
-                .estado(EstadoOrden.PENDIENTE)
+                .estado(EstadoOrden.ENTREGADO)
                 .total(BigDecimal.ZERO)
                 .items(new ArrayList<>())
-                .direccionEnvio(request.getDireccionEnvio())
-                .ciudadEnvio(request.getCiudadEnvio())
-                .provinciaEnvio(request.getProvinciaEnvio())
-                .telefonoContacto(request.getTelefonoContacto())
+                .direccionEnvio("Venta en tienda física")
+                .ciudadEnvio("-")
+                .provinciaEnvio("-")
+                .telefonoContacto("-")
                 .build();
 
-        // Guardamos la orden para obtener el ID
         Orden ordenGuardada = ordenRepository.save(orden);
 
-        // Procesamos los items con la orden ya guardada
         List<OrdenItem> items = request.getItems().stream().map(itemReq -> {
             Producto producto = productoRepository.findById(itemReq.getProductoId())
                     .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + itemReq.getProductoId()));
 
             if (producto.getStock() < itemReq.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para: " + producto.getNombre());
+                throw new RuntimeException("Stock insuficiente para: " + producto.getNombre()
+                        + " (disponible: " + producto.getStock() + ", pedido: " + itemReq.getCantidad() + ")");
             }
 
             producto.setStock(producto.getStock() - itemReq.getCantidad());
@@ -73,31 +67,5 @@ public class OrdenService {
         ordenGuardada.setTotal(total);
 
         return ordenRepository.save(ordenGuardada);
-    }
-
-    public List<Orden> obtenerTodasLasOrdenes() {
-        return ordenRepository.findAllByOrderByFechaCreacionDesc();
-    }
-
-    public List<Orden> obtenerOrdenesDelUsuario(String emailUsuario) {
-        Usuario usuario = usuarioRepository.findByEmail(emailUsuario)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-        return ordenRepository.findByUsuario(usuario);
-    }
-
-    public Orden obtenerOrdenPorId(Long id) {
-        return ordenRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Orden no encontrada"));
-    }
-
-    public Orden actualizarEstado(Long id, EstadoOrden nuevoEstado) {
-        Orden orden = obtenerOrdenPorId(id);
-        orden.setEstado(nuevoEstado);
-        return ordenRepository.save(orden);
-    }
-    public Orden guardarPreferenceId(Long id, String preferenceId) {
-        Orden orden = obtenerOrdenPorId(id);
-        orden.setMpPreferenceId(preferenceId);
-        return ordenRepository.save(orden);
     }
 }

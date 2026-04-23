@@ -1,16 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Smartphone } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { AuthResponse } from "@/types";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [cargando, setCargando] = useState(false);
+    const { login } = useAuth();
+    const { showToast } = useToast();
+    const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,16 +27,13 @@ export default function LoginPage() {
             const res = await authApi.login(email, password);
             const data: AuthResponse = res.data;
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("usuario", JSON.stringify({
-                nombre: data.nombre,
-                rol: data.rol
-            }));
+            login(data.token, { nombre: data.nombre, rol: data.rol });
+            showToast(`¡Bienvenido, ${data.nombre}!`, "success");
 
             if (data.rol === "ADMIN") {
-                window.location.href = "/dashboard";
+                router.push("/dashboard");
             } else {
-                window.location.href = "/";
+                router.push("/");
             }
         } catch {
             setError("Email o contraseña incorrectos");
@@ -70,7 +73,7 @@ export default function LoginPage() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="tu@email.com"
                                 required
-                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
@@ -82,7 +85,7 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
                                 required
-                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 

@@ -1,8 +1,11 @@
 package com.tiendacelulares.backend.controller;
 
+import com.tiendacelulares.backend.dto.LoginRequest;
+import com.tiendacelulares.backend.dto.RegistroRequest;
 import com.tiendacelulares.backend.model.Usuario;
 import com.tiendacelulares.backend.repository.UsuarioRepository;
 import com.tiendacelulares.backend.security.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
@@ -20,24 +22,27 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registro(@RequestBody Usuario usuario) {
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("El email ya está registrado");
+    public ResponseEntity<?> registro(@Valid @RequestBody RegistroRequest request) {
+        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", "El email ya está registrado"));
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRol(Usuario.Rol.CLIENTE);
-        usuario.setActivo(true);
+
+        Usuario usuario = Usuario.builder()
+                .nombre(request.getNombre())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .rol(Usuario.Rol.CLIENTE)
+                .activo(true)
+                .build();
+
         usuarioRepository.save(usuario);
-        return ResponseEntity.ok("Usuario registrado correctamente");
+        return ResponseEntity.ok(Map.of("mensaje", "Usuario registrado correctamente"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
-        String email = credenciales.get("email");
-        String password = credenciales.get("password");
-
-        return usuarioRepository.findByEmail(email)
-                .filter(u -> passwordEncoder.matches(password, u.getPassword()))
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        return usuarioRepository.findByEmail(request.getEmail())
+                .filter(u -> passwordEncoder.matches(request.getPassword(), u.getPassword()))
                 .map(u -> ResponseEntity.ok(Map.of(
                         "token", jwtUtil.generarToken(u.getEmail(), u.getRol().name()),
                         "rol", u.getRol().name(),

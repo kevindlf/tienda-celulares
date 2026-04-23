@@ -2,20 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ordenesApi, productosApi } from "../../lib/api";
-import { Orden, Producto } from "../../types";
+import { ordenesApi, productosApi } from "@/lib/api";
+import { Orden, Producto } from "@/types";
 import { Package, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function DashboardPage() {
     const [ordenes, setOrdenes] = useState<Orden[]>([]);
     const [productos, setProductos] = useState<Producto[]>([]);
     const [cargando, setCargando] = useState(true);
     const router = useRouter();
+    const { isAdmin } = useAuth();
+    const { showToast } = useToast();
 
     useEffect(() => {
-        const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-        if (usuario.rol !== "ADMIN") {
+        if (!isAdmin) {
             router.push("/");
             return;
         }
@@ -27,7 +30,7 @@ export default function DashboardPage() {
             setOrdenes(ordenesRes.data);
             setProductos(productosRes.data);
         }).finally(() => setCargando(false));
-    }, [router]);
+    }, [router, isAdmin]);
 
     const totalVentas = ordenes
         .filter(o => o.estado !== "CANCELADO")
@@ -43,7 +46,7 @@ export default function DashboardPage() {
             await ordenesApi.actualizarEstado(id, estado);
             setOrdenes(ordenes.map(o => o.id === id ? { ...o, estado } : o));
         } catch {
-            alert("Error al actualizar el estado");
+            showToast("Error al actualizar el estado", "error");
         }
     };
 
@@ -69,9 +72,21 @@ export default function DashboardPage() {
             <div className="max-w-7xl mx-auto">
 
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="text-gray-500 mt-1">Panel de administración</p>
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+                        <p className="text-gray-500 mt-1">Panel de administración</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <Link href="/dashboard/ventas"
+                            className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-green-700 transition-colors text-sm">
+                            + Venta física
+                        </Link>
+                        <Link href="/dashboard/reportes"
+                            className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition-colors text-sm">
+                            📊 Reportes
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Stats */}

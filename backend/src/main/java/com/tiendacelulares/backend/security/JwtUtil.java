@@ -2,24 +2,34 @@ package com.tiendacelulares.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "tienda-celulares-secret-key-super-segura-2024";
-    private static final long EXPIRATION = 86400000; // 24 horas en ms
+    @Value("${jwt.secret}")
+    private String secret;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    @Value("${jwt.expiration:86400000}")
+    private long expiration; // 24 horas en ms por defecto
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generarToken(String email, String rol) {
         return Jwts.builder()
                 .subject(email)
                 .claim("rol", rol)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
     }

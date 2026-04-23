@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { productosApi } from "../../../../lib/api";
-import { Producto } from "../../../../types";
+import { productosApi } from "@/lib/api";
+import { Producto } from "@/types";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import ImageUploader from "@/components/ui/ImageUploader";
 
 export default function EditarProductoPage() {
     const [form, setForm] = useState<Partial<Producto>>({});
@@ -14,17 +17,18 @@ export default function EditarProductoPage() {
     const router = useRouter();
     const params = useParams();
     const id = Number(Array.isArray(params.id) ? params.id[0] : params.id);
+    const { isAdmin } = useAuth();
+    const { showToast } = useToast();
 
     useEffect(() => {
-        const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-        if (usuario.rol !== "ADMIN") {
+        if (!isAdmin) {
             router.push("/");
             return;
         }
         productosApi.getById(id)
             .then(res => setForm(res.data))
             .finally(() => setCargando(false));
-    }, [id, router]);
+    }, [id, router, isAdmin]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -37,8 +41,9 @@ export default function EditarProductoPage() {
         try {
             await productosApi.actualizar(id, form);
             router.push("/dashboard");
+            showToast("Producto actualizado correctamente", "success");
         } catch {
-            alert("Error al guardar los cambios");
+            showToast("Error al guardar los cambios", "error");
         } finally {
             setGuardando(false);
         }
@@ -134,6 +139,11 @@ export default function EditarProductoPage() {
                                     className="border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                         </div>
+
+                        <ImageUploader
+                            imagenes={form.imagenes || []}
+                            onChange={(imgs) => setForm({ ...form, imagenes: imgs })}
+                        />
 
                         <div className="flex gap-3 mt-2">
                             <Link href="/dashboard"

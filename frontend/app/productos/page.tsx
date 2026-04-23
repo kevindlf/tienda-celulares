@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { productosApi } from "../../lib/api";
-import { Producto } from "../../types";
+import { productosApi } from "@/lib/api";
+import { Producto } from "@/types";
 import { ShoppingCart, Search, Smartphone } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
+import Link from "next/link";
 
 export default function ProductosPage() {
     const [productos, setProductos] = useState<Producto[]>([]);
     const [filtrados, setFiltrados] = useState<Producto[]>([]);
     const [busqueda, setBusqueda] = useState("");
     const [cargando, setCargando] = useState(true);
+    const { agregar } = useCart();
+    const { showToast } = useToast();
 
     useEffect(() => {
         productosApi.getAll()
@@ -29,15 +34,8 @@ export default function ProductosPage() {
     }, [busqueda, productos]);
 
     const agregarAlCarrito = (producto: Producto) => {
-        const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-        const existente = carrito.find((item: { id: number }) => item.id === producto.id);
-        if (existente) {
-            existente.cantidad += 1;
-        } else {
-            carrito.push({ ...producto, cantidad: 1 });
-        }
-        localStorage.setItem("carrito", JSON.stringify(carrito));
-        alert(`${producto.nombre} agregado al carrito!`);
+        agregar(producto);
+        showToast(`${producto.nombre} agregado al carrito`, "success");
     };
 
     if (cargando) {
@@ -63,7 +61,7 @@ export default function ProductosPage() {
                             placeholder="Buscar por nombre o marca..."
                             value={busqueda}
                             onChange={(e) => setBusqueda(e.target.value)}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
                 </div>
@@ -77,20 +75,38 @@ export default function ProductosPage() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {filtrados.map(producto => (
-                            <div key={producto.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                                <div className="bg-gradient-to-br from-blue-50 to-blue-100 h-48 flex items-center justify-center">
-                                    <Smartphone className="text-blue-300" size={64} />
-                                </div>
+                            <div key={producto.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                                <Link href={`/productos/${producto.id}`}>
+                                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 h-48 flex items-center justify-center cursor-pointer group-hover:from-blue-100 group-hover:to-blue-200 transition-colors">
+                                        {producto.imagenes && producto.imagenes.length > 0 ? (
+                                            <img
+                                                src={producto.imagenes[0]}
+                                                alt={producto.nombre}
+                                                className="h-40 w-40 object-contain"
+                                            />
+                                        ) : (
+                                            <Smartphone className="text-blue-300" size={64} />
+                                        )}
+                                    </div>
+                                </Link>
                                 <div className="p-5">
                                     <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">{producto.marca}</p>
-                                    <h3 className="font-semibold text-gray-900 mb-1">{producto.nombre}</h3>
-                                    <p className="text-sm text-gray-500 mb-3">{producto.ram}GB RAM · {producto.almacenamiento}GB · {producto.color}</p>
+                                    <Link href={`/productos/${producto.id}`}>
+                                        <h3 className="font-semibold text-gray-900 mb-1 hover:text-blue-600 transition-colors cursor-pointer">{producto.nombre}</h3>
+                                    </Link>
+                                    <p className="text-sm text-gray-500 mb-3">
+                                        {producto.ram && `${producto.ram}GB RAM`}
+                                        {producto.almacenamiento && ` · ${producto.almacenamiento}GB`}
+                                        {producto.color && ` · ${producto.color}`}
+                                    </p>
                                     <div className="flex items-center justify-between mt-4">
                                         <div>
                                             <p className="text-xl font-bold text-gray-900">
                                                 ${producto.precio.toLocaleString("es-AR")}
                                             </p>
-                                            <p className="text-xs text-gray-400">Stock: {producto.stock}</p>
+                                            <p className={`text-xs ${producto.stock < 5 ? "text-red-500" : "text-gray-400"}`}>
+                                                {producto.stock === 0 ? "Sin stock" : `Stock: ${producto.stock}`}
+                                            </p>
                                         </div>
                                         <button
                                             onClick={() => agregarAlCarrito(producto)}

@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ordenesApi } from "../../lib/api";
-import { Producto } from "../../types";
-import { ShoppingCart } from "lucide-react";
-
-interface ItemCarrito extends Producto {
-    cantidad: number;
-}
+import { ordenesApi } from "@/lib/api";
+import { Smartphone } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function CheckoutPage() {
-    const [items, setItems] = useState<ItemCarrito[]>([]);
+    const { items, total, vaciar } = useCart();
+    const { isAuthenticated } = useAuth();
+    const { showToast } = useToast();
     const [cargando, setCargando] = useState(false);
     const [form, setForm] = useState({
         direccionEnvio: "",
@@ -22,20 +22,14 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
+        if (!isAuthenticated) {
             router.push("/login");
             return;
         }
-        const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-        if (carrito.length === 0) {
+        if (items.length === 0) {
             router.push("/carrito");
-            return;
         }
-        setItems(carrito);
-    }, [router]);
-
-    const total = items.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+    }, [isAuthenticated, items.length, router]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,11 +40,10 @@ export default function CheckoutPage() {
         setCargando(true);
 
         try {
-            // Creamos la orden
             const ordenData = {
                 ...form,
                 items: items.map(item => ({
-                    producto: { id: item.id },
+                    productoId: item.id,
                     cantidad: item.cantidad,
                 })),
             };
@@ -63,18 +56,19 @@ export default function CheckoutPage() {
             const { preferenceId } = pagoRes.data;
 
             // Limpiamos el carrito
-            localStorage.removeItem("carrito");
+            vaciar();
 
             // Redirigimos a MP
             window.location.href = `https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id=${preferenceId}`;
 
-        } catch (error) {
-            console.error(error);
-            alert("Error al procesar la compra. Intentá de nuevo.");
+        } catch {
+            showToast("Error al procesar la compra. Intentá de nuevo.", "error");
         } finally {
             setCargando(false);
         }
     };
+
+    if (items.length === 0) return null;
 
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -160,8 +154,12 @@ export default function CheckoutPage() {
                             <div className="flex flex-col gap-3 mb-4">
                                 {items.map(item => (
                                     <div key={item.id} className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <ShoppingCart className="text-blue-300" size={16} />
+                                        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                            {item.imagenes && item.imagenes.length > 0 ? (
+                                                <img src={item.imagenes[0]} alt="" className="w-8 h-8 object-contain" />
+                                            ) : (
+                                                <Smartphone className="text-blue-300" size={16} />
+                                            )}
                                         </div>
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-900">{item.nombre}</p>

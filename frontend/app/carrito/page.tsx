@@ -1,44 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Trash2, ShoppingCart, ArrowLeft, Smartphone } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
-import { Producto } from "../../types";
 import Link from "next/link";
 
-interface ItemCarrito extends Producto {
-    cantidad: number;
-}
-
 export default function CarritoPage() {
-    const [items, setItems] = useState<ItemCarrito[]>([]);
+    const { items, total, eliminar, cambiarCantidad } = useCart();
+    const { isAuthenticated } = useAuth();
     const router = useRouter();
 
-    useEffect(() => {
-        const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
-        setItems(carrito);
-    }, []);
-
-    const eliminarItem = (id: number) => {
-        const nuevo = items.filter(item => item.id !== id);
-        setItems(nuevo);
-        localStorage.setItem("carrito", JSON.stringify(nuevo));
-    };
-
-    const cambiarCantidad = (id: number, cantidad: number) => {
-        if (cantidad < 1) return;
-        const nuevo = items.map(item =>
-            item.id === id ? { ...item, cantidad } : item
-        );
-        setItems(nuevo);
-        localStorage.setItem("carrito", JSON.stringify(nuevo));
-    };
-
-    const total = items.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
-
     const irACheckout = () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
+        if (!isAuthenticated) {
             router.push("/login");
             return;
         }
@@ -82,15 +56,21 @@ export default function CarritoPage() {
                     <div className="lg:col-span-2 flex flex-col gap-4">
                         {items.map(item => (
                             <div key={item.id} className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
-                                {/* Imagen placeholder */}
-                                <div className="w-20 h-20 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <ShoppingCart className="text-blue-300" size={28} />
+                                <div className="w-20 h-20 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                    {item.imagenes && item.imagenes.length > 0 ? (
+                                        <img src={item.imagenes[0]} alt={item.nombre} className="w-16 h-16 object-contain" />
+                                    ) : (
+                                        <Smartphone className="text-blue-300" size={28} />
+                                    )}
                                 </div>
 
                                 <div className="flex-1">
                                     <p className="text-xs text-blue-600 font-medium">{item.marca}</p>
                                     <h3 className="font-semibold text-gray-900">{item.nombre}</h3>
-                                    <p className="text-sm text-gray-500">{item.ram}GB RAM · {item.almacenamiento}GB</p>
+                                    <p className="text-sm text-gray-500">
+                                        {item.ram && `${item.ram}GB RAM`}
+                                        {item.almacenamiento && ` · ${item.almacenamiento}GB`}
+                                    </p>
 
                                     <div className="flex items-center justify-between mt-3">
                                         <p className="font-bold text-gray-900">
@@ -111,7 +91,7 @@ export default function CarritoPage() {
                                                 +
                                             </button>
                                             <button
-                                                onClick={() => eliminarItem(item.id)}
+                                                onClick={() => eliminar(item.id)}
                                                 className="ml-2 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                             >
                                                 <Trash2 size={16} />

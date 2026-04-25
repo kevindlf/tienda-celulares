@@ -40,6 +40,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/webhook/**").permitAll()
+                        .requestMatchers("/api/catalogo/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/configuracion").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/configuracion").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("ADMIN")

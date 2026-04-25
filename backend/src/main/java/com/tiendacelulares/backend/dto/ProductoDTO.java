@@ -19,6 +19,12 @@ public class ProductoDTO {
     private Integer almacenamiento;
     private Integer ram;
     private String color;
+    private String tipoProducto;
+    private String condicion;
+    private Integer nivelBateria;
+    private Integer ciclosCarga;
+    private BigDecimal costoProducto;
+    private String categoria;
     private List<String> imagenes;
     private Boolean activo;
-}
+}

@@ -58,19 +58,26 @@ public class MercadoPagoService {
 
         // Usamos la primera URL configurada como base del frontend
         String baseUrl = frontendUrl.split(",")[0].trim();
+        boolean isLocalhost = baseUrl.contains("localhost") || baseUrl.contains("127.0.0.1");
 
-        PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success(baseUrl + "/compra/exitosa")
-                .failure(baseUrl + "/compra/fallida")
-                .pending(baseUrl + "/compra/pendiente")
-                .build();
-
-        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+        PreferenceRequest.PreferenceRequestBuilder prefBuilder = PreferenceRequest.builder()
                 .items(items)
-                .backUrls(backUrls)
-                .autoReturn("approved")
-                .externalReference(orden.getId().toString())
-                .build();
+                .externalReference(orden.getId().toString());
+
+        // MercadoPago rechaza autoReturn con URLs de localhost
+        // Solo configurar back_urls y autoReturn en producción
+        if (!isLocalhost) {
+            PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
+                    .success(baseUrl + "/compra/exitosa")
+                    .failure(baseUrl + "/compra/fallida")
+                    .pending(baseUrl + "/compra/pendiente")
+                    .build();
+            prefBuilder.backUrls(backUrls).autoReturn("approved");
+        } else {
+            log.info("Entorno desarrollo (localhost) — back_urls y autoReturn deshabilitados");
+        }
+
+        PreferenceRequest preferenceRequest = prefBuilder.build();
         try {
             PreferenceClient client = new PreferenceClient();
             Preference preference = client.create(preferenceRequest);

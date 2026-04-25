@@ -34,4 +34,12 @@ public class CrearProductoRequest {
     private Integer ram;
     private String color;
     private List<String> imagenes;
+
+    // Nuevos campos
+    private String tipoProducto;  // "CELULAR" o "ACCESORIO"
+    private String condicion;     // "NUEVO" o "USADO"
+    private Integer nivelBateria; // Solo para usados (0-100%)
+    private Integer ciclosCarga;  // Solo para usados
+    private BigDecimal costoProducto; // Costo de compra
+    private String categoria;    // Solo para accesorios
 }

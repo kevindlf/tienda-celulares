@@ -9,6 +9,12 @@ export interface Producto {
     almacenamiento: number;
     ram: number;
     color: string;
+    tipoProducto: 'CELULAR' | 'ACCESORIO';
+    condicion: 'NUEVO' | 'USADO';
+    nivelBateria?: number;
+    ciclosCarga?: number;
+    costoProducto?: number;
+    categoria?: string;
     imagenes: string[];
     activo: boolean;
 }

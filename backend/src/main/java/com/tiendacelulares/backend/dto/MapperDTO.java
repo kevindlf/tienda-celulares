@@ -19,6 +19,12 @@ public class MapperDTO {
                 .almacenamiento(producto.getAlmacenamiento())
                 .ram(producto.getRam())
                 .color(producto.getColor())
+                .tipoProducto(producto.getTipoProducto().name())
+                .condicion(producto.getCondicion().name())
+                .nivelBateria(producto.getNivelBateria())
+                .ciclosCarga(producto.getCiclosCarga())
+                .costoProducto(producto.getCostoProducto())
+                .categoria(producto.getCategoria())
                 .imagenes(producto.getImagenes())
                 .activo(producto.getActivo())
                 .build();

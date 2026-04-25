@@ -75,4 +75,26 @@ export const reportesApi = {
     ventasPorEstado: () => api.get('/api/reportes/ventas-por-estado'),
 };
 
+// Catálogo (para dropdowns de formularios)
+export const catalogoApi = {
+    marcas: () => api.get('/api/catalogo/marcas'),
+    modelos: (marca: string) => api.get(`/api/catalogo/modelos?marca=${marca}`),
+    colores: (marca: string, modelo: string) => api.get(`/api/catalogo/colores?marca=${marca}&modelo=${modelo}`),
+    ramOpciones: () => api.get('/api/catalogo/ram-opciones'),
+    almacenamientoOpciones: () => api.get('/api/catalogo/almacenamiento-opciones'),
+    categoriasAccesorio: () => api.get('/api/catalogo/categorias-accesorio'),
+};
+
+// Configuración de la tienda
+export const configuracionApi = {
+    get: () => api.get('/api/configuracion'),
+    actualizar: (config: unknown) => api.put('/api/configuracion', config),
+};
+
+// Chatbot IA
+export const chatApi = {
+    enviarMensaje: (mensaje: string, historial: any[]) => 
+        api.post('/api/chat', { mensaje, historial }),
+};
+
 export default api;

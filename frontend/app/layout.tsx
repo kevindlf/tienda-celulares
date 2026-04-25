@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import ChatWidget from "@/components/ui/ChatWidget";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -20,12 +22,16 @@ export default function RootLayout({
 }) {
     return (
         <html lang="es">
-            <body className={`${geist.className} bg-gray-50 min-h-screen`}>
+            <body className={`${geist.className} bg-gray-50 min-h-screen flex flex-col`}>
                 <AuthProvider>
                     <CartProvider>
                         <ToastProvider>
                             <Navbar />
-                            {children}
+                            <main className="flex-grow">
+                                {children}
+                            </main>
+                            <WhatsAppButton />
+                            <ChatWidget />
                         </ToastProvider>
                     </CartProvider>
                 </AuthProvider>

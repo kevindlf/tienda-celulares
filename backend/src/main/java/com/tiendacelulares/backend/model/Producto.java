@@ -53,7 +53,30 @@ public class Producto {
     // Color del teléfono
     private String color;
 
-    // Lista de URLs de imágenes (guardamos como texto separado por comas)
+    // Tipo de producto: CELULAR o ACCESORIO
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'CELULAR'")
+    @Builder.Default
+    private TipoProducto tipoProducto = TipoProducto.CELULAR;
+
+    // Condición: NUEVO o USADO
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'NUEVO'")
+    @Builder.Default
+    private CondicionProducto condicion = CondicionProducto.NUEVO;
+
+    // Solo para celulares usados
+    private Integer nivelBateria; // Porcentaje de salud de batería (0-100)
+    private Integer ciclosCarga;  // Cantidad de ciclos de carga
+
+    // Costo de compra del producto (para calcular ganancia)
+    @Column(precision = 10, scale = 2)
+    private BigDecimal costoProducto;
+
+    // Categoría para accesorios (Funda, Auricular, Cargador, etc.)
+    private String categoria;
+
+    // Lista de URLs de imágenes
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "producto_imagenes",
             joinColumns = @JoinColumn(name = "producto_id"))

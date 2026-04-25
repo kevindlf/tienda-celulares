@@ -19,6 +19,7 @@ public class OrdenService {
     private final OrdenRepository ordenRepository;
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
+    private final EmailService emailService;
 
     @Transactional
     public Orden crearOrden(String emailUsuario, CrearOrdenRequest request) {
@@ -72,7 +73,16 @@ public class OrdenService {
         ordenGuardada.getItems().addAll(items);
         ordenGuardada.setTotal(total);
 
-        return ordenRepository.save(ordenGuardada);
+        Orden ordenFinal = ordenRepository.save(ordenGuardada);
+        
+        // Enviar email de confirmación (de forma asíncrona)
+        try {
+            emailService.enviarConfirmacionOrden(ordenFinal, usuario);
+        } catch (Exception e) {
+            System.err.println("Error al enviar email de confirmación: " + e.getMessage());
+        }
+        
+        return ordenFinal;
     }
 
     public List<Orden> obtenerTodasLasOrdenes() {
@@ -92,8 +102,21 @@ public class OrdenService {
 
     public Orden actualizarEstado(Long id, EstadoOrden nuevoEstado) {
         Orden orden = obtenerOrdenPorId(id);
+        
+        boolean cambioEstado = orden.getEstado() != nuevoEstado;
         orden.setEstado(nuevoEstado);
-        return ordenRepository.save(orden);
+        Orden ordenActualizada = ordenRepository.save(orden);
+        
+        // Enviar email si cambió el estado y no es PENDIENTE o PAGADO (pues ya se envía al crearla/pagarla)
+        if (cambioEstado && nuevoEstado != EstadoOrden.PENDIENTE) {
+            try {
+                emailService.enviarActualizacionEstado(ordenActualizada, ordenActualizada.getUsuario());
+            } catch (Exception e) {
+                System.err.println("Error al enviar email de actualización: " + e.getMessage());
+            }
+        }
+        
+        return ordenActualizada;
     }
     public Orden guardarPreferenceId(Long id, String preferenceId) {
         Orden orden = obtenerOrdenPorId(id);

@@ -180,12 +180,12 @@ export default function VentasFisicasPage() {
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <button onClick={() => cambiarCantidad(item.producto.id, item.cantidad - 1)}
-                                                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-white">
+                                                    className="w-8 h-8 rounded-lg border-2 border-gray-300 bg-white flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 text-gray-700 transition-colors">
                                                     <Minus size={14} />
                                                 </button>
-                                                <span className="w-6 text-center font-medium">{item.cantidad}</span>
+                                                <span className="w-8 text-center font-bold text-gray-900 text-base">{item.cantidad}</span>
                                                 <button onClick={() => cambiarCantidad(item.producto.id, item.cantidad + 1)}
-                                                    className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-white">
+                                                    className="w-8 h-8 rounded-lg border-2 border-gray-300 bg-white flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 text-gray-700 transition-colors">
                                                     <Plus size={14} />
                                                 </button>
                                             </div>
@@ -193,8 +193,8 @@ export default function VentasFisicasPage() {
                                                 ${(item.producto.precio * item.cantidad).toLocaleString("es-AR")}
                                             </p>
                                             <button onClick={() => eliminarItem(item.producto.id)}
-                                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                                                <Trash2 size={14} />
+                                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                                                <Trash2 size={16} />
                                             </button>
                                         </div>
                                     ))}

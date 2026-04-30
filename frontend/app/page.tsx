@@ -40,10 +40,10 @@ export default function Home() {
                             <span className="text-white/90 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase">Colección 2026</span>
                         </div>
 
-                        <h1 className="font-display font-black leading-[0.9] tracking-tight mb-5 sm:mb-8">
-                            <span className="block text-[3rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white">Conectate</span>
-                            <span className="block text-[3rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white">con</span>
-                            <span className="block text-[4rem] xs:text-7xl sm:text-8xl lg:text-[clamp(4.5rem,9vw,7.5rem)] text-white/20 leading-[0.85]">estilo.</span>
+                        <h1 className="font-display font-black tracking-tight mb-5 sm:mb-8">
+                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white leading-[0.95]">Conectate</span>
+                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white leading-[0.95]">con</span>
+                            <span className="block text-[3.25rem] xs:text-7xl sm:text-8xl lg:text-[clamp(4.5rem,9vw,7.5rem)] text-white/20 leading-[0.95] sm:leading-[0.85]">estilo.</span>
                         </h1>
 
                         <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-7 sm:mb-10 max-w-md">

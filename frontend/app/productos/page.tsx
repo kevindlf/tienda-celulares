@@ -201,9 +201,9 @@ function ProductosContent() {
     return (
         <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
             {/* Header sticky con búsqueda */}
-            <div className="bg-card-bg border-b border-card-border sticky top-14 sm:top-16 z-30 backdrop-blur-md bg-card-bg/95">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-4 sm:mb-5">
+            <div className="bg-card-bg border-b border-card-border sticky top-16 z-30 backdrop-blur-md bg-card-bg/95">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
+                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-3 sm:mb-4">
                         <div>
                             <p className="text-[10px] sm:text-xs font-black text-primary/60 uppercase tracking-[0.25em] mb-1.5">Catálogo</p>
                             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-black text-foreground leading-tight">
@@ -349,7 +349,7 @@ function ProductosContent() {
 
                                         <div className="mt-auto flex items-end justify-between gap-2 pt-2 sm:pt-3 border-t border-card-border">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-base sm:text-lg lg:text-xl font-black text-foreground tracking-tight truncate">
+                                                <p className="text-sm sm:text-base lg:text-lg font-black text-foreground tracking-tight tabular-nums leading-tight">
                                                     ${producto.precio.toLocaleString("es-AR")}
                                                 </p>
                                                 <p className={`text-[10px] sm:text-[11px] font-semibold mt-0.5 ${producto.stock === 0 ? "text-red-500" : producto.stock < 5 ? "text-orange-500" : "text-primary"}`}>

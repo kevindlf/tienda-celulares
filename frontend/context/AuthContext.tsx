@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = (newToken: string, newUsuario: UsuarioInfo) => {
         localStorage.setItem("token", newToken);
         localStorage.setItem("usuario", JSON.stringify(newUsuario));
+        document.cookie = `token=${newToken}; path=/; SameSite=Lax; max-age=86400`;
         setToken(newToken);
         setUsuario(newUsuario);
     };
@@ -46,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem("token");
         localStorage.removeItem("usuario");
         localStorage.removeItem("carrito");
+        document.cookie = "token=; path=/; max-age=0";
         setToken(null);
         setUsuario(null);
     };

@@ -11,8 +11,8 @@ import { ToastProvider } from "@/context/ToastContext";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "TechPhone Store",
-    description: "La mejor tienda de celulares",
+    title: process.env.NEXT_PUBLIC_STORE_NAME || "TechPhone Store",
+    description: process.env.NEXT_PUBLIC_STORE_DESCRIPTION || "La mejor tienda de celulares",
 };
 
 export default function RootLayout({
@@ -30,8 +30,8 @@ export default function RootLayout({
                             <main className="flex-grow">
                                 {children}
                             </main>
-                            <WhatsAppButton />
                             <ChatWidget />
+                            <WhatsAppButton />
                         </ToastProvider>
                     </CartProvider>
                 </AuthProvider>

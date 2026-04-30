@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -15,13 +16,23 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration:86400000}")
-    private long expiration; // 24 horas en ms por defecto
+    private long expiration;
 
     private Key key;
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        if (secret == null || secret.trim().isEmpty()) {
+            throw new IllegalStateException(
+                "JWT_SECRET no configurado. Generá uno con: openssl rand -base64 32"
+            );
+        }
+        if (secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                "JWT_SECRET debe tener al menos 32 caracteres (256-bit)"
+            );
+        }
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generarToken(String email, String rol) {

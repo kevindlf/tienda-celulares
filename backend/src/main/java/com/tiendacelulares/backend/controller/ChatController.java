@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "*")
 public class ChatController {
 
     @Autowired
@@ -21,7 +20,7 @@ public class ChatController {
     @PostMapping
     public ResponseEntity<ChatResponse> enviarMensaje(@RequestBody ChatRequest request) {
         String respuesta = chatService.procesarMensaje(
-                request.getMensaje(), 
+                request.getMensaje(),
                 request.getHistorial() != null ? request.getHistorial() : new ArrayList<>()
         );
         return ResponseEntity.ok(new ChatResponse(respuesta));
@@ -30,7 +29,7 @@ public class ChatController {
     @Data
     public static class ChatRequest {
         private String mensaje;
-        private List<Map<String, String>> historial; // Cada map tiene "role" (user/model) y "text"
+        private List<Map<String, String>> historial;
     }
 
     @Data

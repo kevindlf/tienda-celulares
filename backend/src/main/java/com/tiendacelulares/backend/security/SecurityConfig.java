@@ -20,6 +20,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final RateLimitFilter rateLimitFilter;
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
@@ -54,11 +55,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/ordenes/*/pagar").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/ordenes").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/ordenes/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/ventas-fisicas/**").hasRole("ADMIN")
                         .requestMatchers("/api/reportes/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(rateLimitFilter, JwtFilter.class);
         return http.build();
     }
 

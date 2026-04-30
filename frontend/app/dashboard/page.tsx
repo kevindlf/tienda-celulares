@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ordenesApi, productosApi } from "@/lib/api";
 import { Orden, Producto } from "@/types";
-import { Package, ShoppingBag, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
+import { Package, ShoppingBag, DollarSign, TrendingUp, AlertTriangle, Users, Settings, BarChart2, Download, Store } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -199,17 +199,21 @@ export default function DashboardPage() {
                         <p className="text-gray-500 mt-1">Panel de administración</p>
                     </div>
                     <div className="flex gap-3">
+                        <Link href="/dashboard/clientes"
+                            className="bg-purple-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-purple-700 transition-colors text-sm flex items-center gap-2">
+                            <Users size={15} /> Clientes
+                        </Link>
                         <Link href="/dashboard/configuracion"
                             className="bg-gray-800 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-gray-900 transition-colors text-sm flex items-center gap-2">
-                            ⚙️ Configuración
+                            <Settings size={15} /> Configuración
                         </Link>
                         <Link href="/dashboard/ventas"
                             className="bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-green-700 transition-colors text-sm flex items-center gap-2">
-                            + Venta física
+                            <Store size={15} /> Venta física
                         </Link>
                         <Link href="/dashboard/reportes"
                             className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-medium hover:bg-blue-700 transition-colors text-sm flex items-center gap-2">
-                            📊 Reportes
+                            <BarChart2 size={15} /> Reportes
                         </Link>
                     </div>
                 </div>
@@ -458,9 +462,9 @@ export default function DashboardPage() {
                         <h2 className="font-bold text-gray-900 text-xl">Órdenes recientes</h2>
                         <button 
                             onClick={exportarOrdenesCSV} 
-                            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5"
                         >
-                            ⬇ Exportar CSV
+                            <Download size={14} /> Exportar CSV
                         </button>
                     </div>
                     <div className="overflow-x-auto">

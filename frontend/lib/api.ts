@@ -85,16 +85,21 @@ export const catalogoApi = {
     categoriasAccesorio: () => api.get('/api/catalogo/categorias-accesorio'),
 };
 
+// Chat IA (Gemini)
+export const chatApi = {
+    enviarMensaje: (mensaje: string, historial: { role: string; text: string }[]) =>
+        api.post('/api/chat', { mensaje, historial }),
+};
+
+// Admin
+export const adminApi = {
+    clientes: () => api.get('/api/admin/clientes'),
+};
+
 // Configuración de la tienda
 export const configuracionApi = {
     get: () => api.get('/api/configuracion'),
     actualizar: (config: unknown) => api.put('/api/configuracion', config),
-};
-
-// Chatbot IA
-export const chatApi = {
-    enviarMensaje: (mensaje: string, historial: any[]) => 
-        api.post('/api/chat', { mensaje, historial }),
 };
 
 export default api;

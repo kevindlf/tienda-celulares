@@ -1,6 +1,7 @@
 package com.tiendacelulares.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -20,7 +21,8 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    private final String CORREO_TIENDA = "ventastienda293@gmail.com";
+    @Value("${MAIL_USERNAME:}")
+    private String correoTienda;
     private final DecimalFormat formatoDinero = new DecimalFormat("#,##0");
 
     /**
@@ -31,7 +33,7 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             
-            helper.setFrom(CORREO_TIENDA);
+            helper.setFrom(correoTienda);
             helper.setTo(destinatario);
             helper.setSubject(asunto);
             helper.setText(contenidoHtml, true); // true = es HTML

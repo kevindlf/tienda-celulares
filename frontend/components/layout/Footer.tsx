@@ -56,6 +56,14 @@ export default function Footer() {
                             <li><Link href="/productos?tipo=CELULAR" className="text-foreground/70 hover:text-primary font-medium transition-colors">Smartphones</Link></li>
                             <li><Link href="/productos?tipo=ACCESORIO" className="text-foreground/70 hover:text-primary font-medium transition-colors">Accesorios</Link></li>
                             <li><Link href="/mis-pedidos" className="text-foreground/70 hover:text-primary font-medium transition-colors">Seguir mi pedido</Link></li>
+                            <li className="pt-2 border-t border-card-border">
+                                <p className="text-xs font-black text-foreground/40 uppercase tracking-widest mb-3">Legal</p>
+                                <ul className="flex flex-col gap-3">
+                                    <li><Link href="/politicas/terminos" className="text-foreground/70 hover:text-primary font-medium transition-colors text-sm">Términos y Condiciones</Link></li>
+                                    <li><Link href="/politicas/devoluciones" className="text-foreground/70 hover:text-primary font-medium transition-colors text-sm">Política de Devoluciones</Link></li>
+                                    <li><Link href="/politicas/privacidad" className="text-foreground/70 hover:text-primary font-medium transition-colors text-sm">Política de Privacidad</Link></li>
+                                </ul>
+                            </li>
                             {config.linkInstagram && (
                                 <li className="pt-2">
                                     <a href={config.linkInstagram} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 dark:bg-pink-900/20 text-pink-600 rounded-full hover:bg-pink-100 dark:hover:bg-pink-900/40 text-sm font-bold transition-colors">

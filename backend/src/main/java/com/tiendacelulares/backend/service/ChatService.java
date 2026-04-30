@@ -33,20 +33,18 @@ public class ChatService {
 
     public String procesarMensaje(String mensajeUsuario, List<Map<String, String>> historial) {
         if (geminiApiKey == null || geminiApiKey.isEmpty()) {
-            return "El chat de inteligencia artificial está desactivado momentáneamente (Falta API Key). Por favor, contáctanos por WhatsApp.";
+            return "El chat de inteligencia artificial está desactivado momentáneamente. Por favor, contáctanos por WhatsApp.";
         }
 
-        // 1. Obtener contexto de la tienda
         ConfiguracionTienda config = configuracionService.obtenerConfiguracion();
         List<Producto> productos = productoRepository.findAll();
-        
+
         String inventario = productos.stream()
             .filter(p -> p.getStock() > 0)
-            .map(p -> String.format("- %s (Tipo: %s, Condición: %s, Precio: $%s, Stock: %d)", 
+            .map(p -> String.format("- %s (Tipo: %s, Condición: %s, Precio: $%s, Stock: %d)",
                 p.getNombre(), p.getTipoProducto(), p.getCondicion(), p.getPrecio(), p.getStock()))
             .collect(Collectors.joining("\n"));
 
-        // 2. Crear el prompt del sistema
         String systemPrompt = String.format(
             "Eres el asistente virtual oficial de '%s'. Tu objetivo es ayudar a los clientes a comprar productos, responder sus dudas y guiarlos. " +
             "Sé amable, persuasivo y muy breve. Habla en español de Argentina (usa 'vos', 'che', etc. pero mantén profesionalismo). " +
@@ -59,7 +57,10 @@ public class ChatService {
             "1. NO inventes productos o precios.\n" +
             "2. Si el cliente quiere comprar, indícale que añada el producto al carrito en la web.\n" +
             "3. Mantén tus respuestas en menos de 4 párrafos.\n" +
-            "4. PLAN CANJE: Ofrecemos Plan Canje. Aclara SIEMPRE que solo es válido para Mendoza (principalmente Zona Este). Funciona así: el cliente entrega su celular usado en parte de pago. Para concretarlo, dile que debe ir presencialmente a la tienda (sin costo extra) o que el dueño puede ir a domicilio (en cuyo caso se cobra el envío). Deja al cliente interesado e invítalo a hablar con el dueño al WhatsApp para coordinar la tasación de su equipo viejo.",
+            "4. PLAN CANJE: Ofrecemos Plan Canje. Aclara SIEMPRE que solo es válido para Mendoza (principalmente Zona Este). " +
+            "Funciona así: el cliente entrega su celular usado en parte de pago. Para concretarlo, dile que debe ir presencialmente " +
+            "a la tienda (sin costo extra) o que el dueño puede ir a domicilio (en cuyo caso se cobra el envío). " +
+            "Deja al cliente interesado e invítalo a hablar con el dueño al WhatsApp para coordinar la tasación de su equipo viejo.",
             config.getNombreTienda(),
             config.getDireccionFisica(),
             config.getTelefonoWhatsApp(),
@@ -67,24 +68,18 @@ public class ChatService {
             inventario
         );
 
-        // 3. Preparar la petición a Gemini API
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey;
 
-        // Construir el body en el formato de Gemini
         Map<String, Object> requestBody = new HashMap<>();
-        
-        // Formatear historial
         java.util.List<Map<String, Object>> contents = new java.util.ArrayList<>();
-        
-        // Insertar prompt de sistema como el primer mensaje del modelo (Gemini usa parts)
+
         Map<String, Object> systemPart = new HashMap<>();
         systemPart.put("text", systemPrompt);
         Map<String, Object> systemMessage = new HashMap<>();
-        systemMessage.put("role", "user"); // Instrucción inicial oculta
+        systemMessage.put("role", "user");
         systemMessage.put("parts", java.util.List.of(systemPart));
         contents.add(systemMessage);
-        
-        // Agregar mensaje confirmando instrucciones
+
         Map<String, Object> systemAckPart = new HashMap<>();
         systemAckPart.put("text", "Entendido, soy el asistente virtual. Seguiré estas reglas.");
         Map<String, Object> systemAckMessage = new HashMap<>();
@@ -92,7 +87,6 @@ public class ChatService {
         systemAckMessage.put("parts", java.util.List.of(systemAckPart));
         contents.add(systemAckMessage);
 
-        // Agregar historial real
         for (Map<String, String> msg : historial) {
             Map<String, Object> part = new HashMap<>();
             part.put("text", msg.get("text"));
@@ -102,7 +96,6 @@ public class ChatService {
             contents.add(message);
         }
 
-        // Agregar el mensaje actual del usuario
         Map<String, Object> currentPart = new HashMap<>();
         currentPart.put("text", mensajeUsuario);
         Map<String, Object> currentMessage = new HashMap<>();
@@ -114,7 +107,6 @@ public class ChatService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
@@ -131,7 +123,7 @@ public class ChatService {
             return "Lo siento, no pude procesar tu mensaje.";
         } catch (Exception e) {
             System.err.println("Error al llamar a Gemini: " + e.getMessage());
-            return "Lo siento, hubo un problema al comunicarme con mi cerebro de IA. Por favor intenta más tarde.";
+            return "Lo siento, hubo un problema al comunicarme. Por favor intenta más tarde.";
         }
     }
 }

@@ -284,7 +284,7 @@ export default function DashboardPage() {
                                     <XAxis dataKey="dia" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--foreground)", fillOpacity: 0.5 }} />
                                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--foreground)", fillOpacity: 0.5 }} tickFormatter={(value) => `$${value / 1000}k`} />
                                     <RechartsTooltip
-                                        formatter={(value: number) => [`$${Number(value).toLocaleString("es-AR")}`, "Ventas"]}
+                                        formatter={(value: any) => [`$${Number(value).toLocaleString("es-AR")}`, "Ventas"]}
                                         labelFormatter={(label) => `Día ${label}`}
                                         contentStyle={{ borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--card-bg)", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                                     />
@@ -306,7 +306,7 @@ export default function DashboardPage() {
                                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--foreground)", fillOpacity: 0.5 }} tickFormatter={(value) => `$${value / 1000}k`} />
                                     <RechartsTooltip
                                         cursor={{ fill: "var(--accent)" }}
-                                        formatter={(value: number) => [`$${Number(value).toLocaleString("es-AR")}`, "Ventas"]}
+                                        formatter={(value: any) => [`$${Number(value).toLocaleString("es-AR")}`, "Ventas"]}
                                         contentStyle={{ borderRadius: "12px", border: "1px solid var(--card-border)", backgroundColor: "var(--card-bg)", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)" }}
                                     />
                                     <Bar dataKey="total" fill="#00704A" radius={[4, 4, 0, 0]} barSize={28} />

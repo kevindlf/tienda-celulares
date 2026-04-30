@@ -1,29 +1,33 @@
 import Link from "next/link";
-import { XCircle } from "lucide-react";
+import { XCircle, RotateCcw } from "lucide-react";
 
 export default function CompraFallidaPage() {
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-            <div className="text-center max-w-md">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
-                    <XCircle className="text-red-600" size={40} />
+        <div className="min-h-screen bg-background flex items-center justify-center px-4 py-16 overflow-x-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-red-500/5 blur-3xl pointer-events-none"></div>
+
+            <div className="text-center max-w-md relative">
+                <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-red-500/10 border border-red-500/30 rounded-full mb-6 sm:mb-8">
+                    <XCircle className="text-red-500" size={44} />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-3">El pago no se pudo procesar</h1>
-                <p className="text-gray-500 mb-8">
-                    Hubo un problema con tu pago. Verificá los datos de tu tarjeta o intentá con otro medio de pago.
+                <p className="text-xs font-black text-red-500 uppercase tracking-[0.25em] mb-2">Pago rechazado</p>
+                <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-black text-foreground mb-3 sm:mb-4 leading-tight">No pudimos procesar tu pago</h1>
+                <p className="text-foreground/60 text-sm sm:text-base mb-8 sm:mb-10 leading-relaxed">
+                    Verificá los datos de tu tarjeta o probá con otro medio de pago. Tu carrito sigue intacto.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Link
                         href="/carrito"
-                        className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center justify-center gap-2 bg-primary text-white font-bold px-7 py-4 rounded-full hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/30 transition-all min-h-[52px]"
                     >
+                        <RotateCcw size={18} />
                         Reintentar
                     </Link>
                     <Link
                         href="/productos"
-                        className="border border-gray-200 text-gray-700 font-medium px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors"
+                        className="inline-flex items-center justify-center bg-card-bg border border-card-border text-foreground font-semibold px-7 py-4 rounded-full hover:border-primary/40 transition-all min-h-[52px]"
                     >
-                        Volver a productos
+                        Volver al catálogo
                     </Link>
                 </div>
             </div>

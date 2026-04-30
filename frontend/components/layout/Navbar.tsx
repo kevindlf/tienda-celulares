@@ -69,11 +69,11 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-16">
 
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
+                    <Link href="/" className="flex items-center gap-2 group min-h-[44px]" aria-label="Inicio">
                         <div className="bg-primary text-white p-1.5 rounded-xl group-hover:scale-105 transition-transform">
                             <Smartphone size={20} />
                         </div>
-                        <span className="font-extrabold text-xl tracking-tight text-foreground">{config.nombreTienda}</span>
+                        <span className="font-display font-black text-lg sm:text-xl tracking-tight text-foreground">{config.nombreTienda}</span>
                     </Link>
 
                     {/* Links desktop */}
@@ -134,21 +134,31 @@ export default function Navbar() {
                     </div>
 
                     {/* Menú mobile */}
-                    <div className="flex items-center gap-2 md:hidden">
-                        <button onClick={toggleTheme} className="p-2 text-foreground/80">
+                    <div className="flex items-center gap-1 md:hidden">
+                        <button
+                            onClick={toggleTheme}
+                            aria-label={darkMode ? "Modo claro" : "Modo oscuro"}
+                            className="w-11 h-11 flex items-center justify-center text-foreground/80 hover:text-primary transition-colors rounded-full active:scale-90"
+                        >
                             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
-                        <Link href="/carrito" className="relative p-2 text-foreground/80">
+                        <Link
+                            href="/carrito"
+                            aria-label={`Carrito${cantidadTotal > 0 ? ` (${cantidadTotal} ítems)` : ""}`}
+                            className="relative w-11 h-11 flex items-center justify-center text-foreground/80 hover:text-primary transition-colors rounded-full active:scale-90"
+                        >
                             <ShoppingCart size={22} />
                             {cantidadTotal > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                    {cantidadTotal}
+                                <span className="absolute top-1 right-1 bg-primary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md">
+                                    {cantidadTotal > 9 ? "9+" : cantidadTotal}
                                 </span>
                             )}
                         </Link>
                         <button
-                            className="p-2 text-foreground"
+                            className="w-11 h-11 flex items-center justify-center text-foreground active:scale-90 transition-transform rounded-full"
                             onClick={() => setMenuAbierto(!menuAbierto)}
+                            aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+                            aria-expanded={menuAbierto}
                         >
                             {menuAbierto ? <X size={24} /> : <Menu size={24} />}
                         </button>
@@ -157,19 +167,30 @@ export default function Navbar() {
 
                 {/* Menú mobile abierto */}
                 {menuAbierto && (
-                    <div className="md:hidden border-t border-card-border py-4 flex flex-col gap-4 font-medium">
-                        <Link href="/" className="text-foreground hover:text-primary px-2" onClick={() => setMenuAbierto(false)}>Inicio</Link>
-                        <Link href="/productos" className="text-foreground hover:text-primary px-2" onClick={() => setMenuAbierto(false)}>Catálogo</Link>
+                    <div className="md:hidden border-t border-card-border py-3 flex flex-col font-semibold">
+                        {isAuthenticated && (
+                            <div className="px-3 py-3 mb-2 bg-card-bg rounded-xl border border-card-border">
+                                <p className="text-[10px] font-black text-foreground/40 uppercase tracking-wider">Sesión activa</p>
+                                <p className="text-foreground font-bold">{usuario?.nombre}</p>
+                            </div>
+                        )}
+                        <Link href="/" className="text-foreground hover:bg-card-bg hover:text-primary px-4 py-3 rounded-xl transition-colors min-h-[48px] flex items-center" onClick={() => setMenuAbierto(false)}>Inicio</Link>
+                        <Link href="/productos" className="text-foreground hover:bg-card-bg hover:text-primary px-4 py-3 rounded-xl transition-colors min-h-[48px] flex items-center" onClick={() => setMenuAbierto(false)}>Catálogo</Link>
                         {isAuthenticated && !isAdmin && (
-                            <Link href="/mis-pedidos" className="text-foreground hover:text-primary px-2" onClick={() => setMenuAbierto(false)}>Mis pedidos</Link>
+                            <Link href="/mis-pedidos" className="text-foreground hover:bg-card-bg hover:text-primary px-4 py-3 rounded-xl transition-colors min-h-[48px] flex items-center gap-2" onClick={() => setMenuAbierto(false)}>
+                                <Package size={18} /> Mis pedidos
+                            </Link>
                         )}
                         {isAdmin && (
-                            <Link href="/dashboard" className="text-foreground hover:text-primary px-2" onClick={() => setMenuAbierto(false)}>Dashboard</Link>
+                            <Link href="/dashboard" className="text-foreground hover:bg-card-bg hover:text-primary px-4 py-3 rounded-xl transition-colors min-h-[48px] flex items-center" onClick={() => setMenuAbierto(false)}>Dashboard</Link>
                         )}
+                        <div className="border-t border-card-border my-2"></div>
                         {isAuthenticated ? (
-                            <button onClick={cerrarSesion} className="text-red-500 text-left px-2">Cerrar sesión</button>
+                            <button onClick={cerrarSesion} className="text-red-500 text-left px-4 py-3 rounded-xl hover:bg-red-500/10 transition-colors min-h-[48px] flex items-center">Cerrar sesión</button>
                         ) : (
-                            <Link href="/login" className="text-primary px-2" onClick={() => setMenuAbierto(false)}>Ingresar</Link>
+                            <Link href="/login" className="bg-primary text-white px-4 py-3 rounded-xl mx-1 mt-1 text-center min-h-[48px] flex items-center justify-center gap-2" onClick={() => setMenuAbierto(false)}>
+                                <User size={16} /> Ingresar
+                            </Link>
                         )}
                     </div>
                 )}

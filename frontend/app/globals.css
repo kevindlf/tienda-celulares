@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -33,11 +34,14 @@
   --color-card-border: var(--card-border);
   --color-accent: var(--accent);
   --color-nav-bg: var(--nav-bg);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
+  font-family: var(--font-body);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -70,6 +74,16 @@ body {
     50% {
       transform: translateY(-20px);
     }
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes marquee {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
   }
 
   .animate-chat-open {

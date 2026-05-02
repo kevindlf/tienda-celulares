@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles } from "lucide-react";
 import { chatApi } from "@/lib/api";
 
@@ -17,6 +18,8 @@ export default function ChatWidget() {
     ]);
     const [cargando, setCargando] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const pathname = usePathname();
+    const esCarrito = pathname === "/carrito";
 
     useEffect(() => {
         if (isOpen) {
@@ -48,7 +51,7 @@ export default function ChatWidget() {
     };
 
     return (
-        <div className="fixed bottom-[5.5rem] right-6 z-50 flex flex-col items-end">
+        <div className={`fixed ${esCarrito ? "bottom-[9.5rem]" : "bottom-[5.5rem]"} right-6 z-50 flex flex-col items-end`}>
             {/* Ventana de Chat */}
             {isOpen && (
                 <div className="animate-chat-open w-80 sm:w-96 rounded-2xl shadow-2xl border border-card-border overflow-hidden mb-3 flex flex-col h-[500px] max-h-[78vh] bg-card-bg">

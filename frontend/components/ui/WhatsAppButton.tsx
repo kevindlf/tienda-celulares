@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { configuracionApi } from "@/lib/api";
 
 export default function WhatsAppButton() {
-    const [phoneNumber, setPhoneNumber] = useState(""); // Número dinámico
+    const [phoneNumber, setPhoneNumber] = useState("");
     const message = "Hola! Tengo una consulta sobre un producto de la tienda.";
+    const pathname = usePathname();
+    const esCarrito = pathname === "/carrito";
 
     useEffect(() => {
         configuracionApi.get().then(res => {
@@ -25,7 +28,7 @@ export default function WhatsAppButton() {
     return (
         <button
             onClick={handleClick}
-            className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-[#1ebe57] hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+            className={`fixed ${esCarrito ? "bottom-[5.5rem]" : "bottom-6"} right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-[#1ebe57] hover:scale-110 transition-all duration-300 flex items-center justify-center group`}
             aria-label="Contactar por WhatsApp"
         >
             <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">

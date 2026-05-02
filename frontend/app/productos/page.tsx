@@ -286,7 +286,7 @@ function ProductosContent() {
                 )}
 
                 {/* Grid de productos */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     {filtrados.length === 0 ? (
                         <div className="bg-card-bg rounded-2xl border border-card-border p-8 sm:p-12 text-center flex flex-col items-center">
                             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-background rounded-full flex items-center justify-center mb-4 border border-card-border">
@@ -304,7 +304,7 @@ function ProductosContent() {
                                 <Link
                                     href={`/productos/${producto.id}`}
                                     key={producto.id}
-                                    className="group flex flex-col bg-card-bg border border-card-border rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-300"
+                                    className="group flex flex-col bg-card-bg border border-card-border rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-300 min-w-0"
                                 >
                                     <div className="relative aspect-square bg-background flex items-center justify-center p-4 sm:p-6 overflow-hidden">
                                         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 z-10">

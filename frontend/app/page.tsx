@@ -41,9 +41,9 @@ export default function Home() {
                         </div>
 
                         <h1 className="font-display font-black tracking-tight mb-5 sm:mb-8">
-                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white leading-[0.95]">Conectate</span>
-                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3.5rem,7vw,5.5rem)] text-white leading-[0.95]">con</span>
-                            <span className="block text-[3.25rem] xs:text-7xl sm:text-8xl lg:text-[clamp(4.5rem,9vw,7.5rem)] text-white/20 leading-[0.95] sm:leading-[0.85]">estilo.</span>
+                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3rem,5.5vw,4.75rem)] text-white leading-[0.95]">Conectate</span>
+                            <span className="block text-[2.5rem] xs:text-5xl sm:text-6xl lg:text-[clamp(3rem,5.5vw,4.75rem)] text-white leading-[0.95]">con</span>
+                            <span className="block text-[3.25rem] xs:text-7xl sm:text-8xl lg:text-[clamp(4rem,8vw,6.5rem)] text-white/20 leading-[0.95] sm:leading-[0.85]">estilo.</span>
                         </h1>
 
                         <p className="text-white/70 text-base sm:text-lg leading-relaxed mb-7 sm:mb-10 max-w-md">

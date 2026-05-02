@@ -101,7 +101,7 @@ function ProductosContent() {
     const FiltrosContent = () => (
         <>
             <div className="flex items-center justify-between mb-5 sm:mb-6">
-                <h2 className="font-display font-black text-foreground flex items-center gap-2 text-base">
+                <h2 className="font-display font-black text-gray-900 flex items-center gap-2 text-base">
                     <Filter size={16} /> Filtros
                 </h2>
                 <button onClick={limpiarFiltros} className="text-xs text-primary font-bold hover:underline min-h-[36px] px-2">
@@ -110,31 +110,31 @@ function ProductosContent() {
             </div>
 
             <div className="mb-5 lg:hidden">
-                <label className="block text-xs font-black text-foreground/50 uppercase tracking-wider mb-2">Ordenar por</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-2">Ordenar por</label>
                 <div className="relative">
                     <select
                         value={orden}
                         onChange={(e) => setOrden(e.target.value)}
-                        className="w-full appearance-none bg-background border border-card-border px-4 py-3 pr-10 rounded-xl text-sm font-medium text-foreground focus:outline-none focus:border-primary"
+                        className="w-full appearance-none bg-gray-50 border border-gray-200 px-4 py-3 pr-10 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-primary"
                     >
                         <option value="recientes">Más recientes</option>
                         <option value="precio_asc">Menor precio</option>
                         <option value="precio_desc">Mayor precio</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none" size={16} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                 </div>
             </div>
 
             <div className="mb-5">
-                <label className="block text-xs font-black text-foreground/50 uppercase tracking-wider mb-3">Categoría</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Categoría</label>
                 <div className="flex flex-col gap-1.5">
                     {["TODOS", "CELULAR", "ACCESORIO"].map(tipo => (
                         <label key={tipo} className="flex items-center gap-3 cursor-pointer group min-h-[36px]">
                             <input type="radio" className="hidden" name="filtroTipo" checked={filtroTipo === tipo} onChange={() => setFiltroTipo(tipo)} />
-                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${filtroTipo === tipo ? "border-primary bg-primary" : "border-card-border group-hover:border-primary/50"}`}>
+                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${filtroTipo === tipo ? "border-primary bg-primary" : "border-gray-300 group-hover:border-primary/50"}`}>
                                 {filtroTipo === tipo && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
                             </div>
-                            <span className={`text-sm ${filtroTipo === tipo ? "text-foreground font-semibold" : "text-foreground/70"}`}>
+                            <span className={`text-sm ${filtroTipo === tipo ? "text-gray-900 font-semibold" : "text-gray-700"}`}>
                                 {tipo === "TODOS" ? "Todos" : tipo === "CELULAR" ? "Celulares" : "Accesorios"}
                             </span>
                         </label>
@@ -143,29 +143,29 @@ function ProductosContent() {
             </div>
 
             <div className="mb-5">
-                <label className="block text-xs font-black text-foreground/50 uppercase tracking-wider mb-3">Marca</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Marca</label>
                 <div className="relative">
                     <select
                         value={filtroMarca}
                         onChange={(e) => setFiltroMarca(e.target.value)}
-                        className="w-full appearance-none bg-background border border-card-border px-4 py-2.5 pr-10 rounded-xl text-sm font-medium text-foreground focus:outline-none focus:border-primary"
+                        className="w-full appearance-none bg-gray-50 border border-gray-200 px-4 py-2.5 pr-10 rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-primary"
                     >
                         <option value="TODAS">Todas las marcas</option>
                         {marcasDisponibles.map(m => <option key={m} value={m}>{m}</option>)}
                         <option value="Genérico">Genérico</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/40 pointer-events-none" size={16} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                 </div>
             </div>
 
             <div className="mb-5">
-                <label className="block text-xs font-black text-foreground/50 uppercase tracking-wider mb-3">Condición</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Condición</label>
                 <div className="grid grid-cols-3 gap-1.5">
                     {["TODAS", "NUEVO", "USADO"].map(cond => (
                         <button
                             key={cond}
                             onClick={() => setFiltroCondicion(cond)}
-                            className={`py-2 px-1 text-xs font-bold rounded-lg border transition-colors min-h-[40px] ${filtroCondicion === cond ? "bg-foreground border-foreground text-background" : "bg-background border-card-border text-foreground/60 hover:border-foreground/40"}`}
+                            className={`py-2 px-1 text-xs font-bold rounded-lg border transition-colors min-h-[40px] ${filtroCondicion === cond ? "bg-gray-900 border-gray-900 text-white" : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-400"}`}
                         >
                             {cond === "TODAS" ? "Todas" : cond === "NUEVO" ? "Nuevos" : "Usados"}
                         </button>
@@ -174,7 +174,7 @@ function ProductosContent() {
             </div>
 
             <div>
-                <label className="block text-xs font-black text-foreground/50 uppercase tracking-wider mb-3">Precio (ARS)</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wider mb-3">Precio (ARS)</label>
                 <div className="flex items-center gap-2">
                     <input
                         type="number"
@@ -182,16 +182,16 @@ function ProductosContent() {
                         placeholder="Mín"
                         value={precioMin}
                         onChange={(e) => setPrecioMin(e.target.value)}
-                        className="w-full bg-background border border-card-border px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:border-primary"
+                        className="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary"
                     />
-                    <span className="text-foreground/30">–</span>
+                    <span className="text-gray-300">–</span>
                     <input
                         type="number"
                         inputMode="numeric"
                         placeholder="Máx"
                         value={precioMax}
                         onChange={(e) => setPrecioMax(e.target.value)}
-                        className="w-full bg-background border border-card-border px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:border-primary"
+                        className="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-primary"
                     />
                 </div>
             </div>
@@ -253,8 +253,8 @@ function ProductosContent() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row gap-6 lg:gap-8">
 
                 {/* Sidebar Filtros — Desktop */}
-                <aside className="hidden lg:block lg:w-64 flex-shrink-0">
-                    <div className="bg-card-bg rounded-2xl border border-card-border p-6 sticky top-40">
+                <aside className="hidden lg:block lg:w-64 flex-shrink-0 mt-8 lg:mt-10">
+                    <div className="bg-white rounded-2xl p-6 shadow-md sticky top-40">
                         <FiltrosContent />
                     </div>
                 </aside>
@@ -263,12 +263,12 @@ function ProductosContent() {
                 {mostrarFiltrosMobile && (
                     <div className="fixed inset-0 z-50 lg:hidden">
                         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMostrarFiltrosMobile(false)}></div>
-                        <div className="absolute inset-x-0 bottom-0 bg-card-bg rounded-t-3xl p-5 sm:p-6 max-h-[85vh] overflow-y-auto">
+                        <div className="absolute inset-x-0 bottom-0 bg-white rounded-t-3xl p-5 sm:p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
                             <div className="flex items-center justify-between mb-5">
-                                <h2 className="font-display font-black text-xl text-foreground">Filtrar productos</h2>
+                                <h2 className="font-display font-black text-xl text-gray-900">Filtrar productos</h2>
                                 <button
                                     onClick={() => setMostrarFiltrosMobile(false)}
-                                    className="w-10 h-10 rounded-full bg-background border border-card-border flex items-center justify-center"
+                                    className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-700"
                                     aria-label="Cerrar"
                                 >
                                     <X size={18} />
@@ -286,30 +286,30 @@ function ProductosContent() {
                 )}
 
                 {/* Grid de productos */}
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 mt-8 lg:mt-10">
                     {filtrados.length === 0 ? (
-                        <div className="bg-card-bg rounded-2xl border border-card-border p-8 sm:p-12 text-center flex flex-col items-center">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-background rounded-full flex items-center justify-center mb-4 border border-card-border">
-                                <Search className="text-foreground/40" size={22} />
+                        <div className="bg-white rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center shadow-md">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                                <Search className="text-gray-400" size={22} />
                             </div>
-                            <h3 className="text-lg sm:text-xl font-display font-black text-foreground mb-2">No encontramos nada</h3>
-                            <p className="text-foreground/60 text-sm max-w-sm mx-auto mb-6">No hay productos que coincidan con tus filtros. Probá con otras opciones.</p>
-                            <button onClick={limpiarFiltros} className="bg-foreground text-background px-6 py-3 rounded-full font-bold text-sm hover:bg-foreground/90 transition-colors min-h-[44px]">
+                            <h3 className="text-lg sm:text-xl font-display font-black text-gray-900 mb-2">No encontramos nada</h3>
+                            <p className="text-gray-600 text-sm max-w-sm mx-auto mb-6">No hay productos que coincidan con tus filtros. Probá con otras opciones.</p>
+                            <button onClick={limpiarFiltros} className="bg-gray-900 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-gray-800 transition-colors min-h-[44px]">
                                 Limpiar filtros
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                             {filtrados.map(producto => (
                                 <Link
                                     href={`/productos/${producto.id}`}
                                     key={producto.id}
-                                    className="group flex flex-col bg-card-bg border border-card-border rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/40 hover:shadow-lg transition-all duration-300 min-w-0"
+                                    className="group flex flex-col bg-white rounded-xl sm:rounded-2xl p-4 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 min-w-0"
                                 >
-                                    <div className="relative aspect-square bg-background flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+                                    <div className="relative aspect-square w-full bg-white rounded-lg flex items-center justify-center overflow-hidden">
                                         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 z-10">
                                             {producto.condicion === "USADO" && (
-                                                <span className="bg-foreground text-background text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">
+                                                <span className="bg-gray-900 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full">
                                                     Reacond.
                                                 </span>
                                             )}
@@ -323,20 +323,20 @@ function ProductosContent() {
                                             <img
                                                 src={producto.imagenes[0]}
                                                 alt={producto.nombre}
-                                                className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-110 transition-transform duration-500"
+                                                className="max-w-full max-h-full w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500"
                                             />
                                         ) : producto.tipoProducto === "CELULAR" ? (
-                                            <Smartphone className="w-12 h-12 sm:w-16 sm:h-16 text-card-border" />
+                                            <Smartphone className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300" />
                                         ) : (
-                                            <Headphones className="w-12 h-12 sm:w-16 sm:h-16 text-card-border" />
+                                            <Headphones className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300" />
                                         )}
                                     </div>
 
-                                    <div className="p-3 sm:p-4 lg:p-5 flex flex-col flex-1">
-                                        <p className="text-[9px] sm:text-[10px] font-black text-primary/60 uppercase tracking-[0.2em] mb-1">{producto.marca}</p>
-                                        <h3 className="font-bold text-sm sm:text-base text-foreground leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">{producto.nombre}</h3>
+                                    <div className="pt-3 sm:pt-4 flex flex-col flex-1">
+                                        <p className="text-[9px] sm:text-[10px] font-black text-primary/70 uppercase tracking-[0.2em] mb-1">{producto.marca}</p>
+                                        <h3 className="font-bold text-sm sm:text-base text-gray-900 leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">{producto.nombre}</h3>
 
-                                        <p className="text-xs text-foreground/50 mb-3 line-clamp-1 hidden sm:block">
+                                        <p className="text-xs text-gray-500 mb-3 line-clamp-1 hidden sm:block">
                                             {producto.tipoProducto === "CELULAR" ? (
                                                 <>
                                                     {producto.ram && `${producto.ram}GB RAM`}
@@ -347,9 +347,9 @@ function ProductosContent() {
                                             )}
                                         </p>
 
-                                        <div className="mt-auto flex items-end justify-between gap-2 pt-2 sm:pt-3 border-t border-card-border">
+                                        <div className="mt-auto flex items-end justify-between gap-2 pt-2 sm:pt-3 border-t border-gray-200">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm sm:text-base lg:text-lg font-black text-foreground tracking-tight tabular-nums leading-tight">
+                                                <p className="text-sm sm:text-base lg:text-lg font-black text-gray-900 tracking-tight tabular-nums leading-tight">
                                                     ${producto.precio.toLocaleString("es-AR")}
                                                 </p>
                                                 <p className={`text-[10px] sm:text-[11px] font-semibold mt-0.5 ${producto.stock === 0 ? "text-red-500" : producto.stock < 5 ? "text-orange-500" : "text-primary"}`}>

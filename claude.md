@@ -1,6 +1,6 @@
 # 📱 TechPhone Store — Documentación de Lógica Funcional
 
-> **Archivo:** `claude.md`
+> **Archivo:** `CLAUDE.md`
 > **Proyecto:** Tienda de Celulares (Backend + Frontend + WhatsApp Bot)
 > **Propósito:** Documentar la lógica actual que SÍ funciona para mantener contexto en futuras iteraciones.
 
@@ -8,15 +8,15 @@
 
 ## 1. 🏗️ Arquitectura del Proyecto
 
-El proyecto es un **ecommerce fullstack** dividido en tres módulos:
+El proyecto es un **ecommerce fullstack white-label** dividido en tres módulos:
 
 | Módulo | Tecnología | Puerto |
 |--------|-----------|--------|
 | **Backend** | Spring Boot 4.0.3 + Java 21 | `8081` |
 | **Frontend** | Next.js 16.2.4 + React 19.2.4 + Tailwind CSS 4 | `3000` |
-| **WhatsApp Bot** | Node.js + `whatsapp-web.js` (MVP básico) | — |
+| **WhatsApp Bot** | Node.js + `whatsapp-web.js` — **pendiente, se implementará con n8n** | — |
 
-La base de datos es **PostgreSQL** (configurada vía Supabase en prod, local en dev).
+La base de datos es **PostgreSQL** (local en dev, Railway/Supabase en prod).
 
 ---
 
@@ -48,7 +48,7 @@ public String generarToken(String email, String rol) {
 - **CSRF:** Deshabilitado (API REST stateless)
 - **Roles:** `ADMIN` y `CLIENTE`
 - **Rutas públicas:** `/api/auth/**`, `/api/webhook/**`, `/api/catalogo/**`, `/api/chat`, `/api/configuracion` (GET), `/api/productos` (GET)
-- **Rutas protegidas ADMIN:** POST/PUT/DELETE productos, todas las órdenes, ventas físicas, reportes, configuración (PUT)
+- **Rutas protegidas ADMIN:** POST/PUT/DELETE productos, todas las órdenes (GET), ventas físicas, reportes, clientes, configuración (PUT)
 
 ### 2.3 JwtFilter
 - Interceptor `OncePerRequestFilter` que:
@@ -56,6 +56,10 @@ public String generarToken(String email, String rol) {
   2. Valida el token con `JwtUtil`
   3. Crea un `UsernamePasswordAuthenticationToken` con `ROLE_<rol>`
   4. Lo setea en el `SecurityContextHolder`
+
+### 2.4 RateLimitFilter
+- Implementado con **Bucket4j** (bucket4j-core 8.10.1)
+- Limita requests en endpoints críticos para evitar abuso
 
 ---
 
@@ -67,9 +71,9 @@ public String generarToken(String email, String rol) {
 public class Usuario {
     Long id;
     String nombre;
-    String email; // único
-    String password; // BCrypt
-    Rol rol; // ADMIN | CLIENTE
+    String email;        // único
+    String password;     // BCrypt
+    Rol rol;             // ADMIN | CLIENTE
     String telefono, direccion, ciudad, provincia;
     Boolean activo = true;
     LocalDateTime fechaCreacion;
@@ -80,7 +84,10 @@ public class Usuario {
 - `POST /api/auth/registro` — Crea usuario con rol `CLIENTE`, valida email único
 - `POST /api/auth/login` — Valida credenciales, devuelve `{ token, rol, nombre }`
 
-### 3.3 Frontend — AuthContext.tsx
+### 3.3 AdminController
+- `GET /api/admin/clientes` — Lista de usuarios CLIENTE con estadísticas de compra. Solo ADMIN.
+
+### 3.4 Frontend — AuthContext.tsx
 - **Estado:** `usuario` (nombre + rol), `token`, `isAuthenticated`, `isAdmin`
 - **Persistencia:** `localStorage` con keys `"token"` y `"usuario"`
 - **Logout:** Limpia token, usuario y carrito de `localStorage`
@@ -101,14 +108,15 @@ public class Producto {
     Integer stock;
     Integer almacenamiento, ram;
     String color;
-    TipoProducto tipoProducto; // CELULAR | ACCESORIO
-    CondicionProducto condicion; // NUEVO | USADO
-    Integer nivelBateria;   // Solo USADO (0-100%)
-    Integer ciclosCarga;    // Solo USADO
-    BigDecimal costoProducto; // Para calcular ganancia
-    String categoria;       // Solo ACCESORIOS
-    List<String> imagenes;  // URLs de Cloudinary
+    TipoProducto tipoProducto;          // CELULAR | ACCESORIO
+    CondicionProducto condicion;        // NUEVO | USADO
+    Integer nivelBateria;               // Solo USADO (0-100%)
+    Integer ciclosCarga;                // Solo USADO
+    BigDecimal costoProducto;           // Para calcular ganancia
+    String categoria;                   // Solo ACCESORIOS
+    List<String> imagenes;              // URLs de Cloudinary
     Boolean activo = true;
+    LocalDateTime fechaCreacion, fechaActualizacion;
 }
 ```
 
@@ -175,7 +183,6 @@ Cuando hay items en el carrito, se cargan automáticamente accesorios sugeridos:
 public enum EstadoOrden {
     PENDIENTE,   // Orden creada, no pagada
     PAGADO,      // Pago confirmado por MP
-    PREPARANDO,  // Admin la está preparando
     ENVIADO,     // Ya despachada
     ENTREGADO,   // Llegó al cliente
     CANCELADO    // Cancelada/rechazada
@@ -193,7 +200,7 @@ public enum EstadoOrden {
    - Envía email de confirmación (asíncrono)
 5. Frontend llama `POST /api/ordenes/{id}/pagar`
 6. Backend crea preferencia de MercadoPago
-7. Frontend redirige a `https://sandbox.mercadopago.com.ar/checkout/v1/redirect?pref_id={preferenceId}`
+7. Frontend redirige al checkout de MercadoPago
 
 ### 6.3 Webhook de MercadoPago
 - **Ruta POST:** `/api/webhook/mercadopago`
@@ -210,10 +217,10 @@ public enum EstadoOrden {
 - En **localhost**: se omite `backUrls` y `autoReturn` (MP los rechaza)
 - En **producción**: redirige a `/compra/exitosa`, `/compra/fallida`, `/compra/pendiente`
 
-### 6.5 Email Automáticos
+### 6.5 Emails Automáticos
 Configurado con **Spring Mail (Gmail SMTP)**:
 - `CORREO_TIENDA = ventastienda293@gmail.com`
-- **Confirmación de orden** (`@Async`): HTML bonito con items, total, branding
+- **Confirmación de orden** (`@Async`): HTML con items, total y branding
 - **Actualización de estado** (`@Async`): Notifica al cliente cuando cambia de estado (no PENDIENTE)
 
 ---
@@ -226,7 +233,7 @@ Configurado con **Spring Mail (Gmail SMTP)**:
 - No requiere usuario autenticado (venta anónima)
 - Descuenta stock igual que una orden online
 
-### 7.2 Frontend — Dashboard Ventas
+### 7.2 Frontend — Dashboard Ventas (`/dashboard/ventas`)
 - Pantalla tipo POS con buscador de productos
 - Agregar/quitar items, modificar cantidades
 - Campo opcional: nombre del cliente
@@ -237,13 +244,14 @@ Configurado con **Spring Mail (Gmail SMTP)**:
 ## 8. 🤖 Chatbot IA con Gemini
 
 ### 8.1 ChatService.java
-- **Modelo:** `gemini-2.5-flash` (Google Generative Language API)
+- **Modelo:** `gemini-2.5-flash`
 - **Endpoint:** `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
 - **Contexto inyectado:**
   - Nombre de la tienda, dirección, WhatsApp
   - Inventario actual (solo productos con stock > 0)
   - Reglas: no inventar precios, hablar en español argentino, ser breve
-  - **Plan Canje:** Ofrecemos canje de celulares usados. Solo válido en Mendoza (Zona Este). Cliente va a tienda o dueño va a domicilio (con costo de envío).
+  - **Plan Canje:** canje de celulares usados, solo en Mendoza Zona Este
+- **Si `GEMINI_API_KEY` no está configurada:** retorna mensaje pidiendo contactar por WhatsApp, no crashea
 
 ### 8.2 ChatController
 - `POST /api/chat` — Público, sin auth
@@ -259,23 +267,24 @@ Configurado con **Spring Mail (Gmail SMTP)**:
 
 ---
 
-## 9. 📱 Integración WhatsApp
+## 9. 📱 WhatsApp
 
-### 9.1 WhatsAppService.java (Twilio)
-- **Librería:** Twilio SDK v10.0.0
-- **Configuración:** `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
-- Si no está configurado, loguea error pero no crashea
+### 9.1 Estado actual
+- **Twilio: NO implementado.** El CLAUDE.md anterior lo mencionaba por error.
+- **whatsapp-web.js:** instalado en `whatsapp-bot/package.json` pero sin código implementado.
+- **Plan:** implementar la automatización de WhatsApp con **n8n** (workflows sin código).
 
-### 9.2 WhatsAppController (Webhook Twilio)
-- `POST /api/webhook/whatsapp` — Recibe mensajes entrantes de Twilio
-- Formato: `application/x-www-form-urlencoded` con params `From` y `Body`
-- Procesa mensaje de forma asíncrona (en un `new Thread`) para no bloquear a Twilio
-- Pasa el mensaje a `ChatService` (Gemini) y responde automáticamente
-
-### 9.3 WhatsAppButton (Frontend)
+### 9.2 WhatsAppButton (Frontend)
 - Botón flotante verde `#25D366` en esquina inferior derecha
 - Carga número dinámico desde `/api/configuracion`
 - Abre `https://wa.me/{numero}?text={mensaje}` en nueva pestaña
+- **Es solo un link directo — no hay automatización todavía**
+
+### 9.3 Plan con n8n
+- Webhook de n8n recibe mensajes entrantes de WhatsApp
+- Llama al endpoint `POST /api/chat` del backend (Gemini)
+- Responde automáticamente al cliente
+- No requiere cambios en el backend
 
 ---
 
@@ -306,6 +315,10 @@ Configurado con **Spring Mail (Gmail SMTP)**:
 - Ventas por estado (barras de progreso)
 - Productos con stock bajo (links a edición)
 
+### 10.3 Clientes (`/dashboard/clientes`)
+- Lista de usuarios con rol CLIENTE
+- Estadísticas de compra por cliente
+
 ---
 
 ## 11. ⚙️ Configuración de Tienda
@@ -330,7 +343,7 @@ public class ConfiguracionTienda {
   - Envío gratis: $100,000
   - Mensaje: "¡Aprovechá 3 cuotas sin interés!"
 - `GET /api/configuracion` — Público
-- `PUT /api/configuracion` — ADMIN
+- `PUT /api/configuracion` — ADMIN (`/dashboard/configuracion`)
 
 ### 11.3 Uso en Frontend
 - Navbar carga nombre de tienda y mensaje de cabecera
@@ -350,8 +363,8 @@ public class ConfiguracionTienda {
 
 ### 12.2 Variables de entorno necesarias
 ```
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=***
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=***
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
 ```
 
 ---
@@ -360,10 +373,11 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=***
 
 ### 13.1 Implementación
 - CSS custom properties en `globals.css` con `:root` (light) y `.dark` (dark)
-- Colores Starbucks-inspired: verde `#00704A` como primary
+- Paleta verde oscuro (Starbucks-inspired): `#00704A` como primary
 - Toggle en Navbar con iconos Sun/Moon
 - Persistencia en `localStorage` key `"theme"`
 - Detecta `prefers-color-scheme` si no hay preferencia guardada
+- Fuentes: **Syne** (display/headings) + **DM Sans** (body)
 
 ### 13.2 Variables CSS
 ```css
@@ -394,38 +408,26 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=***
 
 ### Backend (`application.properties`)
 ```properties
-# Base de datos
 spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/mi_base_local}
 spring.datasource.username=${DB_USERNAME:postgres}
 spring.datasource.password=${DB_PASSWORD:root}
-
-# JWT
 jwt.secret=${JWT_SECRET:}
 jwt.expiration=${JWT_EXPIRATION:86400000}
-
-# CORS
 app.cors.allowed-origins=${CORS_ORIGINS:http://localhost:3000}
-
-# MercadoPago
 mercadopago.access-token=${MP_ACCESS_TOKEN:}
 mercadopago.public-key=${MP_PUBLIC_KEY:}
-
-# Mail
 spring.mail.username=${MAIL_USERNAME:}
 spring.mail.password=${MAIL_PASSWORD:}
-
-# APIs externas
 gemini.api.key=${GEMINI_API_KEY:}
-twilio.account-sid=${TWILIO_ACCOUNT_SID:}
-twilio.auth-token=${TWILIO_AUTH_TOKEN:}
-twilio.phone-number=${TWILIO_PHONE_NUMBER:}
+server.port=${PORT:8081}
 ```
 
 ### Frontend (`.env.local`)
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8081
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=***
-NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=***
+NEXT_PUBLIC_MP_PUBLIC_KEY=
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=
 ```
 
 ---
@@ -436,7 +438,7 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=***
 ```bash
 cd backend
 ./mvnw spring-boot:run
-# o en Windows:
+# Windows:
 mvnw.cmd spring-boot:run
 ```
 
@@ -448,104 +450,96 @@ npm run dev
 ```
 
 ### Base de datos
-- Requiere PostgreSQL local o configurar `DB_URL` apuntando a Supabase
-- Las tablas se crean automáticamente (`spring.jpa.hibernate.ddl-auto=update`)
+- Requiere PostgreSQL local o configurar `DB_URL` apuntando a Railway/Supabase
+- Las tablas se crean automáticamente (`ddl-auto=update`)
 
 ---
 
 ## 16. 📁 Estructura de Archivos Clave
 
 ```
-backend/
-├── src/main/java/com/tiendacelulares/backend/
-│   ├── BackendApplication.java          # @EnableAsync
-│   ├── controller/
-│   │   ├── AuthController.java          # Registro/login
-│   │   ├── ProductoController.java      # CRUD productos
-│   │   ├── OrdenController.java         # Crear orden + pagar + estado
-│   │   ├── CatalogoController.java      # Marcas, modelos, colores
-│   │   ├── VentaFisicaController.java   # POS tienda
-│   │   ├── ReporteController.java       # Resumen, stock, ventas
-│   │   ├── ChatController.java          # Gemini chatbot
-│   │   ├── WhatsAppController.java      # Webhook Twilio
-│   │   ├── WebhookController.java       # Notificaciones MP
-│   │   ├── ConfiguracionTiendaController.java
-│   │   └── GlobalExceptionHandler.java  # Manejo centralizado errores
-│   ├── service/
-│   │   ├── ProductoService.java         # Borrado lógico
-│   │   ├── OrdenService.java            # Stock + email async
-│   │   ├── MercadoPagoService.java      # Preferencias + webhook
-│   │   ├── VentaFisicaService.java      # Orden ENTREGADA directa
-│   │   ├── CatalogoService.java         # Catálogo hardcodeado
-│   │   ├── ChatService.java             # Gemini API
-│   │   ├── WhatsAppService.java         # Twilio
-│   │   ├── EmailService.java            # HTML emails
-│   │   └── ConfiguracionTiendaService.java
-│   ├── security/
-│   │   ├── JwtUtil.java                 # Generar/validar tokens
-│   │   ├── JwtFilter.java               # Filtro de requests
-│   │   └── SecurityConfig.java          # Rutas y CORS
-│   ├── model/                           # Entidades JPA
-│   ├── dto/                             # Request/Response DTOs
-│   └── repository/                      # JPA Repositories
-└── src/main/resources/application.properties
+backend/src/main/java/com/tiendacelulares/backend/
+├── BackendApplication.java
+├── controller/
+│   ├── AdminController.java              # GET /api/admin/clientes
+│   ├── AuthController.java               # Registro/login
+│   ├── CatalogoController.java           # Marcas, modelos, colores, RAM, almacenamiento
+│   ├── ChatController.java               # Gemini chatbot
+│   ├── ConfiguracionTiendaController.java
+│   ├── GlobalExceptionHandler.java       # Manejo centralizado errores
+│   ├── OrdenController.java              # Crear orden + pagar + estado
+│   ├── ProductoController.java           # CRUD productos
+│   ├── ReporteController.java            # Resumen, stock bajo, ventas por estado
+│   ├── VentaFisicaController.java        # POS tienda
+│   └── WebhookController.java            # Notificaciones MercadoPago
+├── security/
+│   ├── JwtUtil.java
+│   ├── JwtFilter.java
+│   ├── RateLimitFilter.java              # Bucket4j rate limiting
+│   └── SecurityConfig.java
+└── service/
+    ├── CatalogoService.java
+    ├── ChatService.java                  # Gemini API
+    ├── ConfiguracionTiendaService.java
+    ├── EmailService.java                 # HTML emails async
+    ├── MercadoPagoService.java
+    ├── OrdenService.java
+    ├── ProductoService.java
+    └── VentaFisicaService.java
 
-frontend/
-├── app/                                 # App Router de Next.js
-│   ├── page.tsx                         # Home con hero y destacados
-│   ├── productos/page.tsx               # Catálogo con filtros
-│   ├── productos/[id]/page.tsx          # Detalle de producto
-│   ├── carrito/page.tsx                 # Carrito + sugerencias
-│   ├── checkout/page.tsx                # Checkout con MP
-│   ├── login/page.tsx                   # Login
-│   ├── registro/page.tsx                # Registro
-│   ├── dashboard/page.tsx               # Panel admin
-│   ├── dashboard/ventas/page.tsx        # POS físico
-│   ├── dashboard/reportes/page.tsx      # Reportes
-│   └── ...                              # Otras páginas
-├── components/
-│   ├── layout/Navbar.tsx                # Nav con theme toggle
-│   └── ui/
-│       ├── ChatWidget.tsx               # Chatbot flotante
-│       ├── WhatsAppButton.tsx           # WA flotante
-│       └── ImageUploader.tsx            # Cloudinary upload
-├── context/
-│   ├── AuthContext.tsx                  # Estado auth global
-│   ├── CartContext.tsx                  # Estado carrito
-│   └── ToastContext.tsx                 # Notificaciones toast
-├── lib/api.ts                           # Axios config + APIs
-└── types/index.ts                       # TypeScript interfaces
+frontend/app/
+├── page.tsx                              # Home
+├── productos/page.tsx                    # Catálogo
+├── productos/[id]/page.tsx               # Detalle producto
+├── carrito/page.tsx
+├── checkout/page.tsx
+├── compra/{exitosa,fallida,pendiente}/   # Resultados de pago
+├── login/ y registro/
+├── mis-pedidos/page.tsx                  # Historial de órdenes del cliente
+├── dashboard/page.tsx                    # Panel admin principal
+├── dashboard/ventas/page.tsx             # POS físico
+├── dashboard/reportes/page.tsx
+├── dashboard/clientes/page.tsx
+├── dashboard/configuracion/page.tsx
+├── dashboard/productos/nuevo-celular/
+├── dashboard/productos/nuevo-accesorio/
+├── dashboard/productos/[id]/             # Editar producto
+└── politicas/{privacidad,terminos,devoluciones}/
 
-whatsapp-bot/
-├── package.json                         # whatsapp-web.js
-└── (MVP - aún sin código fuente principal)
+frontend/components/
+├── layout/Navbar.tsx
+├── layout/Footer.tsx
+└── ui/{ChatWidget,WhatsAppButton,ImageUploader}.tsx
 ```
 
 ---
 
-## 17. ✅ Resumen de Features Funcionales
+## 17. ✅ Estado Real de Features
 
 | Feature | Estado | Notas |
 |---------|--------|-------|
-| Registro/Login con JWT | ✅ Funciona | Roles ADMIN/CLIENTE |
-| CRUD Productos | ✅ Funciona | Borrado lógico |
-| Carrito con localStorage | ✅ Funciona | Límite de stock |
-| Checkout con MP | ✅ Funciona | Sandbox |
-| Webhook MP | ✅ Funciona | Actualiza estado automáticamente |
-| Emails automáticos | ✅ Funciona | HTML con branding |
-| Chatbot IA (Gemini) | ✅ Funciona | Contexto de inventario real |
-| WhatsApp (Twilio) | ✅ Funciona | Webhook + respuestas IA |
-| Ventas físicas (POS) | ✅ Funciona | Descuenta stock |
-| Dashboard con gráficos | ✅ Funciona | Recharts |
-| Reportes | ✅ Funciona | Stock bajo, ventas por estado |
-| Configuración tienda | ✅ Funciona | Persiste en BD |
-| Subida de imágenes | ✅ Funciona | Cloudinary |
-| Tema oscuro/claro | ✅ Funciona | CSS variables + localStorage |
-| Cross-selling | ✅ Funciona | Sugiere accesorios en carrito |
-| Exportar CSV | ✅ Funciona | Órdenes |
-| Filtros de productos | ✅ Funciona | Por tipo, marca, condición, precio |
+| Registro/Login con JWT | ✅ | Roles ADMIN/CLIENTE |
+| CRUD Productos | ✅ | Borrado lógico |
+| Carrito con localStorage | ✅ | Límite de stock |
+| Checkout con MP | ✅ | Sandbox/demo |
+| Webhook MP | ✅ | Actualiza estado automáticamente |
+| Emails automáticos | ✅ | HTML con branding |
+| Chatbot IA (Gemini) | ✅ | Contexto de inventario real |
+| Ventas físicas (POS) | ✅ | Descuenta stock |
+| Dashboard con gráficos | ✅ | Recharts |
+| Reportes | ✅ | Stock bajo, ventas por estado |
+| Clientes admin | ✅ | Lista con estadísticas |
+| Configuración tienda | ✅ | Persiste en BD |
+| Subida de imágenes | ✅ | Cloudinary |
+| Tema oscuro/claro | ✅ | CSS variables + localStorage |
+| Cross-selling | ✅ | Sugiere accesorios en carrito |
+| Exportar CSV | ✅ | Órdenes |
+| Rate limiting | ✅ | Bucket4j |
+| Políticas (privacidad/términos) | ✅ | Páginas estáticas |
+| WhatsApp automatizado | ⏳ | Pendiente — se hará con n8n |
+| Twilio | ❌ | Nunca implementado, descartado |
 
 ---
 
-> **Última actualización:** Basado en el código actual del repositorio.
-> **Nota:** Mantener este archivo actualizado ante cualquier cambio significativo en la lógica de negocio.
+> **Última actualización:** Mayo 2025
+> **Nota:** Este archivo refleja el estado real del código. El WhatsApp bot está pendiente y se implementará con n8n sin necesidad de cambios en el backend.

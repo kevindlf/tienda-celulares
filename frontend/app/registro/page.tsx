@@ -23,12 +23,28 @@ export default function RegistroPage() {
         e.preventDefault();
         setError("");
 
-        if (form.password !== form.confirmarPassword) {
-            setError("Las contraseñas no coinciden");
+        if (form.nombre.trim().length < 2) {
+            setError("El nombre debe tener al menos 2 caracteres");
             return;
         }
-        if (form.password.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres");
+        if (!/^[\p{L} .'-]+$/u.test(form.nombre.trim())) {
+            setError("El nombre solo puede contener letras, espacios y guiones");
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+            setError("Ingresá un email válido");
+            return;
+        }
+        if (form.password.length < 8) {
+            setError("La contraseña debe tener al menos 8 caracteres");
+            return;
+        }
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(form.password)) {
+            setError("La contraseña debe tener al menos una mayúscula, una minúscula y un número");
+            return;
+        }
+        if (form.password !== form.confirmarPassword) {
+            setError("Las contraseñas no coinciden");
             return;
         }
 
@@ -111,9 +127,9 @@ export default function RegistroPage() {
                                 autoComplete="new-password"
                                 value={form.password}
                                 onChange={handleChange}
-                                placeholder="Mínimo 6 caracteres"
+                                placeholder="Mín. 8 chars, 1 mayúscula y 1 número"
                                 required
-                                minLength={6}
+                                minLength={8}
                                 className="border border-card-border rounded-xl px-4 py-3.5 text-base text-foreground bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all min-h-[52px]"
                             />
                         </div>

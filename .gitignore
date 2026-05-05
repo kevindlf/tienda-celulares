@@ -1,0 +1,32 @@
+# ===== SECRETS — NUNCA COMMITEAR =====
+**/application-secrets.properties
+**/.env.local
+**/.env.*.local
+**/.env
+
+# ===== BACKEND =====
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/.idea/
+backend/*.iml
+backend/*.iws
+backend/*.ipr
+
+# ===== FRONTEND =====
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ===== WHATSAPP BOT =====
+whatsapp-bot/node_modules/
+whatsapp-bot/.wwebjs_auth/
+whatsapp-bot/.wwebjs_cache/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+*.pem

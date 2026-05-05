@@ -2,6 +2,7 @@ package com.tiendacelulares.backend.service;
 
 import com.tiendacelulares.backend.dto.CrearOrdenRequest;
 import com.tiendacelulares.backend.model.*;
+import com.tiendacelulares.backend.service.CuponService;
 import com.tiendacelulares.backend.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class OrdenService {
     private final UsuarioRepository usuarioRepository;
     private final ProductoRepository productoRepository;
     private final EmailService emailService;
+    private final CuponService cuponService;
 
     @Transactional
     public Orden crearOrden(String emailUsuario, CrearOrdenRequest request) {
@@ -69,6 +71,16 @@ public class OrdenService {
         BigDecimal total = items.stream()
                 .map(OrdenItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (request.getCodigoCupon() != null && !request.getCodigoCupon().isBlank()) {
+            try {
+                var descuentoData = cuponService.validar(request.getCodigoCupon(), total);
+                total = (BigDecimal) descuentoData.get("totalFinal");
+                cuponService.aplicar(request.getCodigoCupon());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Cupón inválido: " + e.getMessage());
+            }
+        }
 
         ordenGuardada.getItems().addAll(items);
         ordenGuardada.setTotal(total);

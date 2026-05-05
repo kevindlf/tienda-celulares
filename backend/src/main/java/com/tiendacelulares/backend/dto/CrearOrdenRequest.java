@@ -27,6 +27,8 @@ public class CrearOrdenRequest {
     @Valid
     private List<ItemRequest> items;
 
+    private String codigoCupon;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

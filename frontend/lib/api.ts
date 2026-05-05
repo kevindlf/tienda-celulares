@@ -102,4 +102,13 @@ export const configuracionApi = {
     actualizar: (config: unknown) => api.put('/api/configuracion', config),
 };
 
+// Cupones
+export const cuponesApi = {
+    validar: (codigo: string, total: number) =>
+        api.get('/api/cupones/validar', { params: { codigo, total } }),
+    crear: (cupon: unknown) => api.post('/api/cupones', cupon),
+    listar: () => api.get('/api/cupones'),
+    desactivar: (id: number) => api.delete(`/api/cupones/${id}`),
+};
+
 export default api;

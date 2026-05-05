@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ordenesApi, productosApi } from "@/lib/api";
 import { Orden, Producto } from "@/types";
-import { Package, ShoppingBag, DollarSign, TrendingUp, AlertTriangle, Users, Settings, BarChart2, Download, Store, Plus, ArrowRight } from "lucide-react";
+import { Package, ShoppingBag, DollarSign, TrendingUp, AlertTriangle, Users, Settings, BarChart2, Download, Store, Plus, ArrowRight, Tag } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -180,6 +180,9 @@ export default function DashboardPage() {
                         </Link>
                         <Link href="/dashboard/ventas" className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-card-bg border border-card-border text-foreground px-3 sm:px-4 py-2.5 rounded-xl font-semibold hover:border-primary/40 hover:text-primary transition-colors text-xs sm:text-sm min-h-[44px]">
                             <Store size={14} /> Venta física
+                        </Link>
+                        <Link href="/dashboard/cupones" className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-card-bg border border-card-border text-foreground px-3 sm:px-4 py-2.5 rounded-xl font-semibold hover:border-primary/40 hover:text-primary transition-colors text-xs sm:text-sm min-h-[44px]">
+                            <Tag size={14} /> Cupones
                         </Link>
                         <Link href="/dashboard/reportes" className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-primary text-white px-3 sm:px-4 py-2.5 rounded-xl font-semibold hover:bg-primary-hover transition-colors text-xs sm:text-sm min-h-[44px]">
                             <BarChart2 size={14} /> Reportes
